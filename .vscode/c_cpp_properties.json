@@ -1,0 +1,8 @@
+"configurations": [
+    {
+    "compilerpath": "/usr/bin/gcc",
+    "cStanddard": "c11"
+    "cppStandard": "c++11"
+     }
+],
+"version": 4
