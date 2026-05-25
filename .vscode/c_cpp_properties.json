@@ -1,8 +1,11 @@
-"configurations": [
-    {
-    "compilerpath": "/usr/bin/gcc",
-    "cStanddard": "c11"
-    "cppStandard": "c++11"
+{
+    "configurations": [
+     {
+        "name": "linux",
+        "compilerPath": "/usr/bin/gcc",
+        "cStandard": "c11",
+        "cppStandard": "c++11"
      }
 ],
 "version": 4
+}
