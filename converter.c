@@ -44,25 +44,55 @@ int main(void) {
 /* TODO: implement the functions below */
 
 void convert_temperature(void) {
+    int hm; 
+    double number, temp;
     // Prompt whether to convert degrees Fahrenheit to Celsius or vice-versa
-    // Calculate the value
-    // Print the value and its unit 
-};
+        // menu text
+    printf("/n--- Temperature ---\n");
+    printf("1. Celsius -> Fahrenheit\n");
+    printf("2. Fahrenheit -> Celsius\n");
+    
+        // choices
+        hm = get_validated_int(1, 2, "C or F conversion (1 or 2): ", "Invalid Input. Try again. /n");
+
+            // temp value input
+        printf("Enter Temp: ");
+        scanf("%lf", &number);
+    // Calculate temp conversion
+    if (hm == 1) {
+            // C -> F 
+        temp = (number * C_TO_F_SCALE) + C_TO_F_OFFSET;
+
+        // Temp Format
+        printf("%.2f/xb0C = %.2f/xb0F/n", number, temp);
+        }
+    else {
+        // F -> C conv
+        temp = (number - C_TO_F_OFFSET) * (5.0 / 9.0);
+        // Print val and unit
+        printf("%.2f/xb0F = %.2f/xb0F/n", number, temp);
+    }
+    } 
+
 
 void convert_distance(void) {
     // Prompt whether to convert Miles to Kilometers or vice-versa
     // Calculate the value
     // Print the value and its unit 
-};
+}
 
 void convert_weight(void) {
     // Prompt whether to convert Pounds to Kilograms or vice-versa
     // Calculate the value
     // Print the value and its unit 
-};
+}
 
 void convert_speed(void) {
     // Prompt whether to convert MPH to KPH or vice-versa
     // Calculate the value
     // Print the value and its unit 
-};
+}
+int get_validated_int(int min, int max, const char *prompt, const char *err) {
+        // temp to view menu
+        return 5;
+}
