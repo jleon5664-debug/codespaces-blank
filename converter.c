@@ -93,6 +93,27 @@ void convert_speed(void) {
     // Print the value and its unit 
 }
 int get_validated_int(int min, int max, const char *prompt, const char *err) {
-        // temp to view menu
+        int user_selection;
+        int input_is_good = 0;
+
+        do {
+            // prompt parameter
+            printf("%s", prompt);
+
+            if (scanf("%d", &user_selection) == 1) {
+                // the min & max parameters
+                if (user_selection >= min && user_selection <= max) {
+                    input_is_good = 1;
+                }   else {
+                    // err parameter
+                    printf("%s", err);
+                }
+        } else {
+            printf("%s", err);
+            while(getchar() != '\n');
+        }
+    } while (input_is_good == 0);
+    return user_selection;
+    
         return 5;
 }
