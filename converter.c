@@ -46,7 +46,7 @@ int main(void) {
 void convert_temperature(void) {
     int hm; 
     double number, temp;
-        // temp menu text
+        // temp menu
     printf("\n--- Temperature ---\n");
     printf("1. Celsius -> Fahrenheit\n");
     printf("2. Fahrenheit -> Celsius\n");
@@ -63,13 +63,13 @@ void convert_temperature(void) {
         temp = (number * C_TO_F_SCALE) + C_TO_F_OFFSET;
 
         // Temp Format
-        printf("%.2f\xb0" "C = %.2f\xb0" "F\n", number, temp);
+        printf("%.2f\xc2\xb0" "C = %.2f\xc2\xb0" "F\n", number, temp);
         }
     else {
         // F -> C conversion
-        temp = (number - C_TO_F_OFFSET) * (C_TO_F_SCALE);
+        temp = (number - C_TO_F_OFFSET) / (C_TO_F_SCALE);
         // Print val and unit
-        printf("%.2f\xb0" "F = %.2f\xb0" "C\n", number, temp);
+        printf("%.2f\xc2\xb0" "F = %.2f\xc2\xb0" "C\n", number, temp);
          }
     } 
 
@@ -155,7 +155,7 @@ void convert_speed(void) {
 }
 
 
-        // 
+        // filter & exit
 int get_validated_int(int min, int max, const char *prompt, const char *err) {
         int user_selection;
         int input_is_good = 0;
@@ -178,6 +178,4 @@ int get_validated_int(int min, int max, const char *prompt, const char *err) {
         }
     } while (input_is_good == 0);
     return user_selection;
-    
-        return 5;
 }
