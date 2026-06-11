@@ -14,6 +14,7 @@ int clamp(int value, int lo, int hi) {
 }
 
 double power(double base, int exp) {
+    double result = 0
     /* TODO */
     return 0.0;
 }
