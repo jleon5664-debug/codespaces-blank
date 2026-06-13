@@ -14,9 +14,21 @@ int clamp(int value, int lo, int hi) {
 }
 
 double power(double base, int exp) {
-    double result = 0
-    /* TODO */
-    return 0.0;
+    double result = 1.0;
+    // force positive number into loop
+        int iterations = exp;
+        if (exp < 0){
+            iterations = -exp;
+        }
+    // double power loop
+        for (int i = 0; i < iterations; i++) {
+            result *= base;
+        }
+    // negative exponent rule 1/ base^n
+        if (exp < 0) {
+            return 1.0 / result;
+        }
+    return result;
 }
 
 int is_prime(int n) {

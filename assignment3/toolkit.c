@@ -27,6 +27,19 @@ int main() {
                 printf("clamp(%i, %i, %i) = %i\n", val, lo, hi, res);
                 break;
             }
+            case 2: {
+                // double power input menu
+                double user_base;
+                int user_exp;
+                    printf("Enter a base and exponent: \n");
+                    scanf("%lf %i", &user_base, &user_exp);
+                    
+                    // mathlib import function & 2 decimal format
+                    double power_res = power(user_base, user_exp);
+                    printf("power(%.2f, %i) = %.2f\n", user_base, user_exp, power_res);
+
+                    break;
+            }
             case 7: {
                 printf("Goodbye!\n");
                 break;
