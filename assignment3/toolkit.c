@@ -84,17 +84,25 @@ int main() {
                     printf("average = %.2f\n", avg_val);
                     break;
             }
+            // count digits menu
+            case 6: {
+                long long user_integer;
+                    // integer input
+                    printf("Enter integer: \n");
+                    scanf("%lli", &user_integer);
+                    int digits = count_digits(user_integer);
+                    // integer count return 
+                    printf("%lli has %i digits.\n", user_integer, digits);
+                    break;
+            }
             case 7: {
                 printf("Goodbye!\n");
                 break;
             }
             default: {
-                if (choice >= 2 && choice <= 6) {
-                    printf("Option %i is not implemented yet\n", choice);
-                }       else if (choice != 7)
-
                         printf("Invalid choice. Please choose 1-7\n");
-                    break; }
-                return 0;} 
+                        break; }
+            
+                        return 0;} 
             }
         }

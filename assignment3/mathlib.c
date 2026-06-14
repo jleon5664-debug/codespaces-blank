@@ -1,8 +1,8 @@
 #include "mathlib.h"
 
-// inequaulty function
+// inequality function
 int clamp(int value, int lo, int hi) {
-    /* lo return value */
+    // lo return value 
     if (value < lo) 
         return lo;
     // hi return value
@@ -33,7 +33,7 @@ double power(double base, int exp) {
     return result;
 }
 
-// is this a prime number funciton
+// is this a prime number function
 int is_prime(int n) {
     // guardrail against 0 & negative numbers
         if (n <= 1) {
@@ -63,7 +63,7 @@ int gcd(int a, int b) {
     return a;
 }
 
-// average of an array / set of numebers
+// average of an array / set of numbers
 double average(int arr[], int len) {
     // prevent divsion by 0 error
         if (len <= 0) {
@@ -77,7 +77,18 @@ double average(int arr[], int len) {
     return (double)sum / len;
 }
 
+// count digits 
 int count_digits(long long n) {
-    /* TODO */
-    return 0;
+    int count = 0;
+    // turns negative numbers into positive
+        if (n < 0) {
+            n = -n;
+        }
+    // do-while loop to count 0 without error
+        do {
+            count++;
+            n /= 10;
+        }
+        while (n > 0);
+    return count;
 }
