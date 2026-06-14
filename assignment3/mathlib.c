@@ -1,5 +1,6 @@
 #include "mathlib.h"
 
+// inequaulty function
 int clamp(int value, int lo, int hi) {
     /* lo return value */
     if (value < lo) 
@@ -13,6 +14,7 @@ int clamp(int value, int lo, int hi) {
         
 }
 
+// exponent function
 double power(double base, int exp) {
     double result = 1.0;
     // force positive number into loop
@@ -31,19 +33,48 @@ double power(double base, int exp) {
     return result;
 }
 
+// is this a prime number funciton
 int is_prime(int n) {
-    /* TODO */
-    return 0;
+    // guardrail against 0 & negative numbers
+        if (n <= 1) {
+        return 0;
+        } 
+    // loop until i^2 is > n
+        for(int i = 2; i * i <= n; i++){
+        if (n % i == 0) {
+            // false
+            return 0;
+            }
+        }
+        return 1;
 }
 
+// gcd / euclidean algorithm
 int gcd(int a, int b) {
-    /* TODO */
-    return 0;
+    // absolute values
+        if (a < 0) a = -a;
+        if (b < 0) b = -b;
+    // while loop 
+        while (b != 0) {
+            int var = b;
+            b = a % b;
+            a = var;
+        }
+    return a;
 }
 
+// average of an array / set of numebers
 double average(int arr[], int len) {
-    /* TODO */
-    return 0.0;
+    // prevent divsion by 0 error
+        if (len <= 0) {
+            return 0.0;
+        }
+        int sum = 0;
+    // avg loop from 0 to len-1
+        for (int i = 0; i < len; i++) {
+            sum += arr[i];
+        }
+    return (double)sum / len;
 }
 
 int count_digits(long long n) {

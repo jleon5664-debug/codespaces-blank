@@ -18,15 +18,18 @@ int main() {
     
         // user choices functions 
         switch (choice) {
+            //clamp menu
             case 1: {
                 int val, lo, hi;
-                printf("Enter value, lo, hi \n");
-                scanf("%i %i %i", &val, &lo, &hi);
+                    printf("Enter value, lo, hi \n");
+                    scanf("%i %i %i", &val, &lo, &hi);
             
-                int res = clamp(val, lo, hi);
-                printf("clamp(%i, %i, %i) = %i\n", val, lo, hi, res);
+                    int res = clamp(val, lo, hi);
+                    printf("clamp(%i, %i, %i) = %i\n", val, lo, hi, res);
+
                 break;
             }
+            // double power menu
             case 2: {
                 // double power input menu
                 double user_base;
@@ -38,6 +41,47 @@ int main() {
                     double power_res = power(user_base, user_exp);
                     printf("power(%.2f, %i) = %.2f\n", user_base, user_exp, power_res);
 
+                break;
+            }
+            // is_prime menu
+            case 3: {
+                // input menu
+                int user_n;
+                    printf("Enter n : \n");
+                    scanf("%i", &user_n);
+
+                    // prime or not prime output
+                    if (is_prime(user_n) == 1) {
+                    printf("%i is prime.\n", user_n);
+                    } else {
+                    printf("%i is not prime.\n", user_n);
+                    }
+
+                break;
+            }
+            //gcd menu
+            case 4: {
+                int user_a, user_b;
+                    printf("Enter a and b: \n");
+                    scanf("%i %i", &user_a, &user_b);
+                    // gcd value from input a & b
+                    int val = gcd(user_a, user_b);
+                    printf("gcd(%i, %i) = %i\n", user_a, user_b, val);
+                    break;
+            }
+            // average menu
+            case 5: {
+                int count;
+                int numbers[100]; 
+                    //len / array size
+                    printf("Enter count then values: \n");
+                    scanf("%i", &count);
+                    //list of numbers input
+                    for (int i = 0; i < count; i++) {
+                    scanf("%i", &numbers[i]);
+                    }
+                    double avg_val = average(numbers, count);
+                    printf("average = %.2f\n", avg_val);
                     break;
             }
             case 7: {
