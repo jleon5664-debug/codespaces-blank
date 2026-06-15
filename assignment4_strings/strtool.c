@@ -66,6 +66,131 @@ int main() {
                     break;
             }
                 break;
+            case 3: {
+                //clear \n
+                while (getchar() != '\n');
+                //a b buckets
+                char user_str1[256];
+                char user_str2[256];
+                printf("Enter first string: \n");
+                fgets(user_str1, sizeof(user_str1), stdin);
+                printf("Enter second string: \n");
+                fgets(user_str2, sizeof(user_str2), stdin);
+                // clean
+                char *ptr1 = user_str1;
+                while (*ptr1 != '\0') {
+                    if (*ptr1 == '\n') {
+                        *ptr1 = '\0';
+                        break;
+                    }
+                    ptr1++;
+                }
+                char *ptr2 = user_str2;
+                while (*ptr2 != '\0') {
+                    if (*ptr2 == '\n') {
+                        *ptr2 = '\0';
+                        break;
+                    }
+                    ptr2++;
+                }
+                int diff = str_compare(user_str1, user_str2);
+                if (diff < 0) {
+                    printf("%s comes before %s\n", user_str1, user_str2);
+                } else if (diff >0) {
+                    printf("%s comes after %s\n", user_str1, user_str2);
+                } else {
+                    printf("%s equals %s\n", user_str1, user_str2);
+                }
+                break;
+            }
+            // reverse string menu
+            case 4: {
+                // clear \n
+                while (getchar() != '\n');
+                char user_str[256];
+                printf("Enter string: \n");
+                fgets(user_str, sizeof(user_str), stdin);
+                // filter & swap \n with \0
+                char *next_line = user_str;
+                while (*next_line != '\0') {
+                    if (*next_line == '\n') {
+                        *next_line = '\0';
+                        break;
+                    }
+                    next_line++;
+                }
+                // process reversal
+                str_reverse(user_str);
+                printf("Reversed: %s\n", user_str);
+                break;
+            }
+            // string count char menu
+            case 5: {
+                // clear \n
+                while (getchar() != '\n');
+                // read input
+                char user_str[256];
+                printf("Enter string: \n");
+                fgets(user_str, sizeof(user_str), stdin);
+                // filter \n 
+                char *next_line = user_str;
+                while (*next_line != '\0') {
+                    if (*next_line == '\n') {
+                        *next_line = '\0';
+                        break;
+                    }
+                    next_line++;
+                }
+                char type_char;
+                printf("Enter character: \n");
+                scanf(" %c", &type_char);
+                //funct process
+                int count = str_count_char(user_str, type_char);
+                printf("Count: %i\n", count);
+                break;
+            }
+            case 6: {
+                // clear \n
+                while (getchar() != '\n');
+                //input
+                int count;
+                char user_str[256];
+                printf("Enter string: \n");
+                fgets(user_str, sizeof(user_str), stdin);
+                //filter \n
+                char *next_line = user_str;
+                while (*next_line != '\0') {
+                    if (*next_line == '\n') {
+                        *next_line = '\0';
+                        break;
+                    }
+                    next_line++;
+                }
+                str_to_upper(user_str);
+                printf("Upper: %s\n", user_str);
+                break;
+            }
+            case 7: {
+                // clear \n
+                while (getchar() != '\n');
+                //input
+                int count;
+                printf("Enter count then values: \n");
+                if (scanf("%i", count) != 1 || count <= 0) {
+                    break;
+                }
+                // decllare size
+                int val[count];
+                for (int i = 0; i < count; i++) {
+                    scanf("%i", val + i);
+                }
+                int min_out = 0;
+                int max_out = 0;
+                double avg_out = 0.0;
+                array_stats(val, count, &min_out, &max_out, &avg_out);
+                printf("min=%i max=%i avg=%.2f\n", min_out, max_out, avg_out);
+                break;
+            }
             case 9: {
                 printf("Goodbye!\n");
                 break;
