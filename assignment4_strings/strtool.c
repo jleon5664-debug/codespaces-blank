@@ -41,6 +41,7 @@ int main() {
                     }    
                 int len = str_length(user_str);
                     printf("Length: %i\n",len);
+                }
                 break;
             // str_copy menu
             case 2: {
@@ -153,7 +154,6 @@ int main() {
                 // clear \n
                 while (getchar() != '\n');
                 //input
-                int count;
                 char user_str[256];
                 printf("Enter string: \n");
                 fgets(user_str, sizeof(user_str), stdin);
@@ -176,7 +176,7 @@ int main() {
                 //input
                 int count;
                 printf("Enter count then values: \n");
-                if (scanf("%i", count) != 1 || count <= 0) {
+                if (scanf("%i", &count) != 1 || count <= 0) {
                     break;
                 }
                 // decllare size
@@ -191,15 +191,40 @@ int main() {
                 printf("min=%i max=%i avg=%.2f\n", min_out, max_out, avg_out);
                 break;
             }
+            case 8: {
+                // clear \n
+                while (getchar() != '\n');
+                int quantity;
+                // input menu
+                printf("Enter count then values: \n");
+                if (scanf("%i", &quantity) != 1 || quantity <= 0) {
+                    break;
+                }
+                int values[quantity];
+                for (int i = 0; i < quantity; i++) {
+                    scanf("%i", values + i);
+                }
+                int target;
+                printf("Enter target: \n");
+                scanf("%i", &target);
+
+                int index = array_find(values, quantity, target);
+                if (index != -1) {
+                    printf("Found at index %i.\n", index);
+                } else {
+                    printf("Not found.\n");
+                }
+                break;
+            }
             case 9: {
                 printf("Goodbye!\n");
                 break;
             }
             default: {
                         printf("Invalid choice. Please choose 1-9\n");
-                        break; }
-            
-                        return 0;} 
+                        break; 
             }
         }
     }
+                        return 0;
+}

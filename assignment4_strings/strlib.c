@@ -131,7 +131,7 @@ int array_find(const int arr[], int len, int target) {
         return -1;
     }
     const int *ptr = arr; 
-    // scan loop
+    // scan loops num
     for (int i = 0; i < len; i++) {
         if (*ptr == target) {
             return i;
