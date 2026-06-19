@@ -18,10 +18,10 @@ int main(void) {
 /* TODO: implement max_of_three
    Returns the largest of three integers. */
 
-    max_of_three(int a, int b, int c) {
+    int max_of_three(int a, int b, int c) {
     int max = a;
-    if (b> max) max = b;
-    if (c >max) max = c;
+    if (b > max) max = b;
+    if (c > max) max = c;
     return max;
    }
 /* TODO: implement min_of_three
