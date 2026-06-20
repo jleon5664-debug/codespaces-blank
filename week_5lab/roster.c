@@ -57,7 +57,7 @@ void print_student(const Student *s) {
 
 // print roster logic 
 void print_roster(const Roster *r) {
-
+        // menu border and print roster display
         printf("==========================================================\n");
         printf("Student Roster (%i students)\n", r->count);
         printf("==========================================================\n");
@@ -73,6 +73,7 @@ void print_roster(const Roster *r) {
     
 }
 
+// add student to roster array
 int roster_add(Roster *r, Student s) {
     // check if array is maxed
     if (r->count >= MAX_STUDENTS) {
@@ -117,7 +118,7 @@ int roster_remove(Roster *r, int student_id) {
 
     // search array
     for (int i = 0; i < r->count; i++) {
-        if (r->students[i].student_id = student_id) {
+        if (r->students[i].student_id == student_id) {
             target_index = i;
             break;
         }
@@ -135,4 +136,73 @@ int roster_remove(Roster *r, int student_id) {
         r->count--;
 
     return 1;
+}
+    // find student id int
+Student *roster_find_by_id(Roster *r, int student_id) {
+    // checks for roster values
+    if (r == 0 || r->count == 0) {
+        return 0;
+    }
+    for (int i = 0; i < r->count; i++) {
+        if (r->students[i].student_id == student_id) {
+            return &(r->students[i]);
+        }
+    } 
+    return 0;  
+}
+// find last name char strcmp
+Student *roster_find_by_name(Roster *r, const char *last_name) {
+    // guardrail
+    if (r == 0 || r->count == 0 || last_name == 0) {
+        return 0;
+    }
+    // trav loop
+    for (int i = 0; i < r->count; i++) {
+        // returns 0 when match
+        if (strcmp(r->students[i].last_name, last_name) == 0) {
+            return &(r->students[i]);
+        }
+    }
+    // miss signal
+    return 0;
+}
+void roster_sort_by_name(Roster *r) {
+    // guardrail
+    if (r == 0 || r->count < 2) {
+        return;
+    }
+    // outer loop to pass through data
+    for (int i = 0; i < r->count - 1; i++) {
+    // inner loop through unsorted rows
+    for (int n = 0; n < r->count - i - 1; n++) {
+    // compare last names a-z
+    if (strcmp(r->students[n].last_name, r->students[n + 1].last_name) > 0) {
+
+    // swap blocks into order
+    Student temp = r->students[n];
+    r->students[n] = r->students[n + 1];
+    r->students[n + 1] = temp;
+            }
+        }
+    }
+}
+// gpa sort
+void roster_sort_by_gpa(Roster *r) {
+    // guardrail
+    if (r == 0 || r->count < 2) {
+        return;
+    }
+    // outer pass 
+    for (int i = 0; i < r->count - 1; i++) {
+        // point runner
+        for (int g = 0; g < r->count - i - 1; g++) {
+        // moves lower values down array
+        if (r->students[g].gpa < r->students[g + 1].gpa) {
+        // arrange gpa
+        Student temp = r->students[g];
+        r->students[g] = r->students[g + 1];
+        r->students[g + 1] = temp;
+        }
+        }
+    }
 }

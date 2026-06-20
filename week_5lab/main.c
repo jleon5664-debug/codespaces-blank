@@ -33,6 +33,7 @@ int main(void) {
         }
 
     switch (choice) {
+        // add roster menu 
         case 1: {
                 printf("First name: \n");
                 // limit scanf to 31 characters
@@ -51,26 +52,86 @@ int main(void) {
 
             int result = roster_add(&my_roster, new_student);
 
-            if (result == 1) {
+                if (result == 1) {
                 printf("Student added.\n");
-            } else if (result == 0) {
+                } else if (result == 0) {
                 printf("Roster Full, Student Not Added\n");
-            } else if (result == -1) {
+                } else if (result == -1) {
                 printf("ID Already Exists, Student Not Added\n");
+                }
+                break;
+            }
+        // remove student menu function
+        case 2: {
+                printf("Enter student ID: \n");
+                scanf("%i", &input_id);
+        
+        // call to capture success || failure 
+        int remove_result = roster_remove(&my_roster, input_id);
+
+        // route 
+            if (remove_result == 1) {
+                printf("Student removed.\n");
+                } else {
+                printf("Student Not Found.\n");
+                } 
+                break;
+            }
+        case 3: {
+                printf("Enter student ID: \n");
+                scanf("%i", &input_id);
+
+        // capture memory add
+            Student *found = roster_find_by_id(&my_roster, input_id);
+
+        // evaluate coordinate
+            if (found == 0) {
+                printf("Student not found.\n");
+            } else {
+                print_student(found);
             }
             break;
         }
-        case 7:{ 
-            printf("\n");
-            print_roster(&my_roster);
-            break;
-        } 
-        case 8: {
-            printf("Goodbye!\n");
-            break;
+        case 4: {
+            printf("Enter last name: \n");
+            scanf("%31s", input_last);
+
+        // call string match
+            Student *found_name = roster_find_by_name(&my_roster, input_last);
+
+                if (found_name == 0) {
+                    printf("Student not found.\n");
+                } else {
+                    print_student(found_name);
+                }
+                break;
         }
+        case 5: {
+            // call sorting function
+                roster_sort_by_name(&my_roster);
+
+                printf("Roster sorted by name\n");
+                break;
+        }
+        case 6: {
+            // call sort gpa 
+                roster_sort_by_gpa(&my_roster);
+
+            // notify modfication
+                printf("Roster sorted by GPA.\n");
+                break;
+        }
+        case 7:{ 
+                printf("\n");
+                print_roster(&my_roster);
+                 break;
+            } 
+        case 8: {
+                printf("Goodbye!\n");
+                break;
+            }
     }
-} while (choice !=8);
+        } while (choice !=8);
 
     return 0;
 }
