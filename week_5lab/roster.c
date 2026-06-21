@@ -113,6 +113,7 @@ double roster_average_gpa(const Roster *r) {
         return total_gpa / r->count;
 }
 
+// remove by id/int
 int roster_remove(Roster *r, int student_id) {
     int target_index = -1;
 
@@ -137,7 +138,7 @@ int roster_remove(Roster *r, int student_id) {
 
     return 1;
 }
-    // find student id int
+// find student id
 Student *roster_find_by_id(Roster *r, int student_id) {
     // checks for roster values
     if (r == 0 || r->count == 0) {
@@ -166,6 +167,7 @@ Student *roster_find_by_name(Roster *r, const char *last_name) {
     // miss signal
     return 0;
 }
+// sort by name
 void roster_sort_by_name(Roster *r) {
     // guardrail
     if (r == 0 || r->count < 2) {
@@ -175,7 +177,7 @@ void roster_sort_by_name(Roster *r) {
     for (int i = 0; i < r->count - 1; i++) {
     // inner loop through unsorted rows
     for (int n = 0; n < r->count - i - 1; n++) {
-    // compare last names a-z
+    // compare last names a-z 
     if (strcmp(r->students[n].last_name, r->students[n + 1].last_name) > 0) {
 
     // swap blocks into order

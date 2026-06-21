@@ -23,12 +23,15 @@ int main(void) {
             printf("6. Sort by GPA\n");
             printf("7. Print roster\n");
             printf("8. Quit\n");   
-            printf("Enter choice (1-8): \n");
+            printf("Enter choice (1-8): ");
+                
         
         if (scanf("%i", &choice) != 1) {
-            // clears letter input from memory
+        // clears letter input from memory
             while (getchar() != '\n');
+        // invalid selectioncd
             printf("Invalid selection. Please enter 1-8.\n");
+            choice = 0;
             continue;
         }
 
@@ -43,10 +46,18 @@ int main(void) {
                 scanf("%31s", input_last);
 
                 printf("Student ID: \n");
-                scanf("%i", &input_id);
+                if (scanf("%i", &input_id) != 1) {
+                    printf("Invalid input. Numerical values only.\n");
+                    while (getchar() != '\n');
+                    break;
+                }
 
                 printf("GPA: \n");
-                scanf("%lf", &input_gpa);
+                // filter out char 
+                while (scanf("%lf", &input_gpa) != 1) {
+                    printf("Invalid input. Numerical values only.\n");
+                    while (getchar() != '\n');
+                }
             
             Student new_student = create_student(input_first, input_last, input_id, input_gpa);
 
@@ -64,7 +75,12 @@ int main(void) {
         // remove student menu function
         case 2: {
                 printf("Enter student ID: \n");
-                scanf("%i", &input_id);
+        // restrict to numbers
+                if (scanf("%i", &input_id) != 1) {
+                    printf("Invalid input. Numerical values only.\n");
+                    while(getchar() != '\n');
+                    break;
+                }
         
         // call to capture success || failure 
         int remove_result = roster_remove(&my_roster, input_id);
@@ -77,10 +93,15 @@ int main(void) {
                 } 
                 break;
             }
+        // find by id
         case 3: {
                 printf("Enter student ID: \n");
-                scanf("%i", &input_id);
-
+                if (scanf("%i", &input_id) != 1) {
+        // clears stdin text
+                printf("Invalid input. ID must be numbers.\n"); 
+                while (getchar() != '\n');
+                break;
+                } 
         // capture memory add
             Student *found = roster_find_by_id(&my_roster, input_id);
 
@@ -92,6 +113,7 @@ int main(void) {
             }
             break;
         }
+        // find by last name
         case 4: {
             printf("Enter last name: \n");
             scanf("%31s", input_last);
@@ -104,8 +126,10 @@ int main(void) {
                 } else {
                     print_student(found_name);
                 }
+                
                 break;
         }
+        // sort by name menu
         case 5: {
             // call sorting function
                 roster_sort_by_name(&my_roster);
@@ -113,6 +137,7 @@ int main(void) {
                 printf("Roster sorted by name\n");
                 break;
         }
+        // gpa sort menu
         case 6: {
             // call sort gpa 
                 roster_sort_by_gpa(&my_roster);
@@ -121,6 +146,7 @@ int main(void) {
                 printf("Roster sorted by GPA.\n");
                 break;
         }
+        // print roster
         case 7:{ 
                 printf("\n");
                 print_roster(&my_roster);
