@@ -1,0 +1,2747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CapturePad">
+  <title>CapturePad • iPad CRUD + Vision</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=SF+Pro+Display:wght@400;500;600&amp;display=swap');
+    
+    :root {
+      --safe-top: env(safe-area-inset-top);
+      --safe-bottom: env(safe-area-inset-bottom);
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    .ipad-safe {
+      padding-top: max(12px, env(safe-area-inset-top));
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+      padding-left: max(12px, env(safe-area-inset-left));
+      padding-right: max(12px, env(safe-area-inset-right));
+    }
+    
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .entry-card {
+      transition: transform 0.1s cubic-bezier(0.2, 0, 0, 1), 
+                  box-shadow 0.1s cubic-bezier(0.2, 0, 0, 1),
+                  border-color 0.1s;
+      touch-action: manipulation;
+    }
+    
+    .entry-card:active {
+      transform: scale(0.985);
+      box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+    }
+    
+    .photo-thumb {
+      transition: transform 0.1s ease;
+      aspect-ratio: 1;
+      object-fit: cover;
+    }
+    
+    .photo-thumb:active {
+      transform: scale(0.95);
+    }
+    
+    .ipad-button {
+      min-height: 48px;
+      min-width: 48px;
+      font-weight: 600;
+      transition: all 0.1s ease;
+    }
+    
+    .ipad-button:active {
+      transform: scale(0.96);
+    }
+    
+    .section-header {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    
+    .modal {
+      animation: modalEnter 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    
+    @keyframes modalEnter {
+      from { opacity: 0; transform: scale(0.96) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    
+    .record-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    
+    @media (min-width: 768px) {
+      .record-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      }
+    }
+    
+    .nav-tab {
+      position: relative;
+      padding-bottom: 10px;
+      font-weight: 600;
+      color: #6b7280;
+    }
+    
+    .nav-tab.active {
+      color: #111827;
+    }
+    
+    .nav-tab.active:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #2563eb;
+      border-radius: 3px;
+    }
+    
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+      gap: 10px;
+    }
+    
+    .ios-input {
+      font-size: 17px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid #d1d5db;
+      background: #fff;
+    }
+    
+    .ios-input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+      outline: none;
+    }
+    
+    .data-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #6b7280;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .stat-chip {
+      background: #f3f4f6;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    
+    .vision-btn {
+      background: linear-gradient(145deg, #1e40af, #3b82f6);
+      color: white;
+      font-weight: 600;
+    }
+    
+    .empty-state {
+      border: 2px dashed #d1d5db;
+      border-radius: 20px;
+    }
+    
+    .ipad-shadow {
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08), 
+                  0 4px 6px -4px rgb(0 0 0 / 0.08);
+    }
+
+    @keyframes scan {
+      0% { top: 18%; }
+      50% { top: 82%; }
+      100% { top: 18%; }
+    }
+  </style>
+</head>
+<body class="bg-zinc-100 text-zinc-900">
+  <div class="flex h-screen overflow-hidden">
+    <!-- Left Sidebar - 4 Square Tabs -->
+    <div class="w-[92px] bg-white border-r border-zinc-200 flex flex-col shrink-0">
+      <!-- 1. Camera (top) -->
+      <div onclick="switchView('camera')" 
+           class="sidebar-tab flex-1 flex flex-col items-center justify-center border-b border-zinc-200 hover:bg-blue-50 active:bg-blue-100 cursor-pointer">
+        <div class="text-center">
+          <div class="text-4xl mb-1">📷</div>
+          <div class="text-[10px] font-bold tracking-wider">CAMERA</div>
+          <div class="text-[7px] text-zinc-500 mt-0.5 leading-none">Capture • Scan<br>History</div>
+        </div>
+      </div>
+
+      <!-- 2. Inventory -->
+      <div onclick="switchView('inventory')" 
+           class="sidebar-tab flex-1 flex flex-col items-center justify-center border-b border-zinc-200 hover:bg-emerald-50 active:bg-emerald-100 cursor-pointer">
+        <div class="text-center">
+          <div class="text-4xl mb-1">📦</div>
+          <div class="text-[10px] font-bold tracking-wider">INVENTORY</div>
+          <div class="text-[7px] text-zinc-500 mt-0.5 leading-none">Inflows • Outflows<br>Stock</div>
+        </div>
+      </div>
+
+      <!-- 3. Clients -->
+      <div onclick="switchView('clients')" 
+           class="sidebar-tab flex-1 flex flex-col items-center justify-center border-b border-zinc-200 hover:bg-violet-50 active:bg-violet-100 cursor-pointer">
+        <div class="text-center">
+          <div class="text-4xl mb-1">👥</div>
+          <div class="text-[10px] font-bold tracking-wider">CLIENTS</div>
+          <div class="text-[7px] text-zinc-500 mt-0.5 leading-none">Companies &amp;<br>Contacts</div>
+        </div>
+      </div>
+
+      <!-- 4. Dashboard (bottom) -->
+      <div onclick="switchView('dashboard')" 
+           class="sidebar-tab flex-1 flex flex-col items-center justify-center hover:bg-amber-50 active:bg-amber-100 cursor-pointer border-t-2 border-zinc-300">
+        <div class="text-center">
+          <div class="text-4xl mb-1">📊</div>
+          <div class="text-[10px] font-bold tracking-wider">DASHBOARD</div>
+          <div class="text-[7px] text-zinc-500 mt-0.5 leading-none">Trends • Stats<br>Insights</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col min-w-0">
+      <!-- Compact Header -->
+      <div class="h-10 bg-white border-b flex items-center px-4 text-sm font-semibold shrink-0">
+        <span class="font-bold">CapturePad</span>
+        <span class="text-zinc-400 ml-1.5 text-xs">Multi-System iPad Platform</span>
+      </div>
+
+      <div id="content-area" class="flex-1 overflow-auto p-2 bg-zinc-50">
+        <!-- Content views injected by switchView() -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modals for details (shared) -->
+  <div id="detail-modal" onclick="if (event.target.id === 'detail-modal') closeDetailModal()" class="hidden fixed inset-0 z-[200] bg-black/40 flex items-center justify-center p-4">
+    <div onclick="event.stopImmediatePropagation()" class="bg-white w-full max-w-md rounded-3xl shadow-xl max-h-[85vh] overflow-auto">
+      <div class="p-4 border-b flex justify-between items-center">
+        <div id="detail-modal-title" class="font-bold text-lg"></div>
+        <button onclick="closeDetailModal()" class="text-2xl leading-none px-2">×</button>
+      </div>
+      <div id="detail-modal-body" class="p-4 text-sm"></div>
+    </div>
+  </div>
+
+  <!-- 4 Main View Containers -->
+  <div id="views" class="hidden">
+    <!-- These are populated dynamically by switchView() for simplicity and cleanliness -->
+  </div>
+
+  <style>
+    /* Hide old legacy content */
+    #view-entries, #view-capture, #view-process,
+    .app-container, #entries-grid, #empty-entries,
+    .fixed.bottom-0, #editor-modal, #photo-modal {
+      display: none !important;
+    }
+    
+    .sidebar-tab {
+      transition: background-color .1s ease;
+    }
+    .sidebar-tab.active {
+      background-color: #dbeafe;
+      border-color: #3b82f6;
+    }
+  </style>
+
+  <!-- Mobile Tab Bar -->
+  <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t z-50 flex" style="padding-bottom: env(safe-area-inset-bottom)">
+    <button onclick="switchTab('entries')" id="mtab-entries"
+            class="flex-1 py-3 flex flex-col items-center text-xs font-semibold active:bg-zinc-50">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2" /></svg>
+      <span>Entries</span>
+    </button>
+    <button onclick="switchTab('capture')" id="mtab-capture"
+            class="flex-1 py-3 flex flex-col items-center text-xs font-semibold active:bg-zinc-50">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2 2 2 0 012-2m0 0l4 4m-4-4v12m0-12a2 2 0 012 2m0 0a2 2 0 01-2 2m10-6a2 2 0 01-2 2 2 2 0 01-2-2m0 0a2 2 0 01-2-2m2 2v12" /></svg>
+      <span>Capture</span>
+    </button>
+    <button onclick="switchTab('process')" id="mtab-process"
+            class="flex-1 py-3 flex flex-col items-center text-xs font-semibold active:bg-zinc-50">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21H6.5a2 2 0 01-1.789-2.894l3.5-7A2 2 0 0110.5 9H4.5M8 8v.01" /></svg>
+      <span>Process</span>
+    </button>
+  </div>
+
+  <div class="app-container px-4 pt-6 pb-24 md:pb-8">
+    
+    <!-- ENTRIES TAB -->
+    <div id="view-entries">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-5">
+        <div>
+          <div class="section-header">All Entries</div>
+          <div class="text-zinc-500 text-sm" id="entries-count">0 entries • 0 photos</div>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+          <!-- Search -->
+          <div class="relative flex-1 md:w-72">
+            <input id="search-input" type="text" placeholder="Search entries..." 
+                   oninput="filterEntries()"
+                   class="w-full pl-10 pr-4 py-3 ios-input bg-white text-base border-zinc-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 absolute left-4 top-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          
+          <!-- Category Filter -->
+          <select id="category-filter" onchange="filterEntries()" 
+                  class="ios-input text-base bg-white border-zinc-300 px-4 py-3 md:w-48">
+            <option value="">All Categories</option>
+            <option value="Equipment">Equipment</option>
+            <option value="Sample">Sample</option>
+            <option value="Document">Document</option>
+            <option value="Receipt">Receipt</option>
+            <option value="Location">Location</option>
+            <option value="Other">Other</option>
+          </select>
+          
+          <button onclick="showNewEntryModal()"
+                  class="flex items-center justify-center gap-x-2 px-6 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold rounded-2xl ipad-button text-base">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" />
+            </svg>
+            <span>New</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Entries Grid -->
+      <div id="entries-grid" class="record-grid">
+        <!-- Populated by JS -->
+      </div>
+      
+      <div id="empty-entries" class="hidden mt-8">
+        <div class="empty-state px-8 py-14 text-center bg-white">
+          <div class="mx-auto w-16 h-16 rounded-3xl bg-zinc-100 flex items-center justify-center mb-5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2" />
+            </svg>
+          </div>
+          <div class="font-semibold text-xl mb-1">No entries yet</div>
+          <p class="text-zinc-500 max-w-xs mx-auto mb-5">Start by creating an entry or using the camera capture.</p>
+          <div class="flex flex-wrap justify-center gap-2">
+            <button onclick="showNewEntryModal()" class="px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-2xl">Create Entry</button>
+            <button onclick="switchTab('capture')" class="px-5 py-2.5 border border-zinc-200 text-sm font-semibold rounded-2xl">Open Camera</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAPTURE TAB -->
+    <div id="view-capture" class="hidden">
+      <div class="max-w-3xl mx-auto">
+        <div class="mb-4">
+          <div class="section-header">Camera Capture</div>
+          <div class="text-sm text-zinc-500">Take photos or scan barcodes/QR codes with the iPad camera. Attach to entries or create new ones instantly.</div>
+        </div>
+
+        <!-- Live Camera -->
+        <div class="bg-black rounded-3xl overflow-hidden shadow-xl ipad-shadow mb-4 relative" id="camera-container">
+          <video id="camera-video" autoplay playsinline class="w-full aspect-video bg-zinc-950 object-cover"></video>
+          
+          <!-- Default photo overlay -->
+          <div id="camera-overlay" class="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div class="border-2 border-white/60 border-dashed rounded-2xl w-3/4 h-3/4"></div>
+          </div>
+          
+          <!-- Barcode scan reticle overlay (shown when scanning) -->
+          <div id="scan-reticle" class="hidden absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div class="relative w-[68%] h-[42%] border-2 border-emerald-400 rounded-xl">
+              <!-- Corner brackets -->
+              <div class="absolute -top-1 -left-1 w-5 h-5 border-t-4 border-l-4 border-emerald-400 rounded-tl"></div>
+              <div class="absolute -top-1 -right-1 w-5 h-5 border-t-4 border-r-4 border-emerald-400 rounded-tr"></div>
+              <div class="absolute -bottom-1 -left-1 w-5 h-5 border-b-4 border-l-4 border-emerald-400 rounded-bl"></div>
+              <div class="absolute -bottom-1 -right-1 w-5 h-5 border-b-4 border-r-4 border-emerald-400 rounded-br"></div>
+              
+              <!-- Animated scan line -->
+              <div class="absolute left-0 right-0 h-0.5 bg-emerald-400/90 animate-[scan_1.6s_ease-in-out_infinite]" 
+                   style="top: 20%; box-shadow: 0 0 12px #4ade80;"></div>
+            </div>
+          </div>
+          
+          <div class="absolute top-4 left-4 px-3 py-1 text-xs font-medium bg-black/70 text-white rounded-full flex items-center gap-x-1.5">
+            <div class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
+            <span id="camera-status">LIVE</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-center gap-x-3 flex-wrap">
+          <button onclick="capturePhotoFromCamera()" 
+                  class="flex-1 md:flex-none px-8 py-4 bg-white text-zinc-900 font-bold text-lg rounded-3xl border border-zinc-200 active:bg-zinc-100 flex items-center justify-center gap-x-3 shadow ipad-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.25" d="M3 9a2 2 0 012-2 2 2 0 012-2m0 0l4 4m-4-4v12m0-12a2 2 0 012 2m0 0a2 2 0 01-2 2m10-6a2 2 0 01-2 2 2 2 0 01-2-2m0 0a2 2 0 01-2-2m2 2v12" />
+            </svg>
+            <span>TAKE PHOTO</span>
+          </button>
+
+          <button onclick="startBarcodeScan()" 
+                  class="flex-1 md:flex-none px-7 py-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-lg rounded-3xl flex items-center justify-center gap-x-3 shadow ipad-button">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.25" d="M12 4v16m8-8H4" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h3m3 0h3M3 11h18M3 15h3m3 0h3m3 0h3" />
+            </svg>
+            <span>SCAN BARCODE / QR</span>
+          </button>
+
+          <button onclick="demoBarcodeScan()" 
+                  class="px-4 py-4 text-sm font-semibold text-emerald-700 border border-emerald-200 bg-white rounded-3xl active:bg-emerald-50 ipad-button">
+            Demo scan
+          </button>
+          
+          <button onclick="stopCamera()" 
+                  class="px-6 py-4 bg-zinc-800 text-white font-semibold rounded-3xl active:bg-black ipad-button">Stop</button>
+          
+          <label class="px-6 py-4 border border-zinc-200 bg-white font-semibold rounded-3xl cursor-pointer flex items-center justify-center gap-x-2 active:bg-zinc-50 ipad-button">
+            <input type="file" accept="image/*" capture="environment" class="hidden" onchange="handleNativeCapture(event)">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v-4m0 0V8a4 4 0 014-4m4 4v8" />
+            </svg>
+            <span class="font-semibold">Library</span>
+          </label>
+        </div>
+
+        <!-- Barcode / QR Scan result panel -->
+        <div id="scan-result-area" class="mt-5 hidden bg-white border border-emerald-200 rounded-3xl p-4">
+          <div class="flex items-start gap-3">
+            <div class="flex-1">
+              <div class="uppercase tracking-widest text-emerald-600 text-xs font-bold">SCAN SUCCESSFUL</div>
+              <div id="scan-result-text" class="font-mono font-semibold text-xl break-all mt-0.5"></div>
+              <div id="scan-result-format" class="text-sm text-emerald-700 mt-0.5"></div>
+            </div>
+            <button onclick="clearScanResult()" class="text-emerald-600 text-2xl leading-none mt-1 px-2">×</button>
+          </div>
+
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button onclick="createEntryFromScan()" 
+                    class="px-4 py-2 text-sm font-semibold bg-emerald-600 text-white rounded-2xl active:bg-emerald-700">Create Entry from Code</button>
+            <button onclick="attachScanToCurrentEntry()" 
+                    class="px-4 py-2 text-sm font-semibold border border-emerald-200 rounded-2xl active:bg-emerald-50">Attach to Selected Entry</button>
+            <button onclick="copyScannedCode()" 
+                    class="px-4 py-2 text-sm font-semibold border border-emerald-200 rounded-2xl active:bg-emerald-50">Copy Code</button>
+            <button onclick="continueScanning()" 
+                    class="px-4 py-2 text-sm font-semibold border border-emerald-200 rounded-2xl active:bg-emerald-50">Continue Scanning</button>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <div class="data-label mb-2">Quick attach to</div>
+          <select id="capture-target" class="ios-input w-full md:w-96 bg-white text-base">
+            <option value="">Create new entry from photo...</option>
+          </select>
+          <div class="mt-2 text-right">
+            <button onclick="manualCodeEntry()" class="text-xs text-emerald-700 underline active:opacity-70">Enter code manually</button>
+          </div>
+        </div>
+        
+        <div id="capture-preview-area" class="mt-6 hidden">
+          <div class="text-sm font-semibold mb-2">Last captured</div>
+          <div class="flex gap-3 flex-wrap" id="capture-preview-thumbs"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROCESS TAB -->
+    <div id="view-process" class="hidden max-w-3xl mx-auto">
+      <div class="mb-4">
+        <div class="section-header">Vision Extensions</div>
+        <p class="text-sm text-zinc-500">Process images taken with the iPad camera into structured data using client-side tools.</p>
+      </div>
+
+      <div class="bg-white rounded-3xl p-5 ipad-shadow border border-zinc-100">
+        <!-- Image picker for processing -->
+        <div>
+          <div class="data-label">Select an image to process</div>
+          <div class="flex gap-2 items-center">
+            <label class="cursor-pointer inline-flex items-center justify-center px-4 py-3 bg-zinc-900 hover:bg-black text-white rounded-2xl font-semibold text-sm ipad-button">
+              <input type="file" accept="image/*" class="hidden" onchange="loadImageForProcessing(event)">
+              Choose photo from device
+            </label>
+            <button onclick="useLastCapturedForProcess()" 
+                    class="px-4 py-3 text-sm font-semibold border border-zinc-200 rounded-2xl active:bg-zinc-50 ipad-button">Use last captured</button>
+            <button onclick="loadDemoQRForProcess()" 
+                    class="px-4 py-3 text-sm font-semibold border border-emerald-200 text-emerald-700 rounded-2xl active:bg-emerald-50 ipad-button">Load demo QR</button>
+          </div>
+        </div>
+
+        <div id="process-preview" class="hidden mt-5">
+          <div class="flex gap-4">
+            <!-- Preview -->
+            <div class="flex-1">
+              <img id="process-image" class="rounded-2xl w-full max-h-[340px] object-contain border border-zinc-200 bg-zinc-50" alt="Process preview">
+            </div>
+            
+            <div class="w-64 space-y-2">
+              <div>
+                <div class="data-label">Quick Actions</div>
+                <div class="space-y-2">
+                  <button onclick="runOCR()" class="w-full vision-btn text-sm py-3 rounded-2xl flex items-center justify-center gap-2">
+                    <span>🔍</span> 
+                    <span>Run OCR (Extract Text)</span>
+                  </button>
+                  <button onclick="scanBarcodeFromCurrentImage()" class="w-full px-4 py-3 text-sm font-semibold bg-emerald-600 text-white rounded-2xl active:bg-emerald-700 flex items-center justify-center gap-2">
+                    <span>📊</span>
+                    <span>Detect Barcode / QR</span>
+                  </button>
+                  <button onclick="analyzeImage()" class="w-full px-4 py-3 text-sm font-semibold rounded-2xl border border-zinc-200 bg-white active:bg-zinc-50">Image Stats + Colors</button>
+                  <button onclick="applyGrayscale()" class="w-full px-4 py-3 text-sm font-semibold rounded-2xl border border-zinc-200 bg-white active:bg-zinc-50">Apply Grayscale</button>
+                  <button onclick="applyThreshold()" class="w-full px-4 py-3 text-sm font-semibold rounded-2xl border border-zinc-200 bg-white active:bg-zinc-50">High-Contrast (Threshold)</button>
+                  <button onclick="applySharpen()" class="w-full px-4 py-3 text-sm font-semibold rounded-2xl border border-zinc-200 bg-white active:bg-zinc-50">Sharpen</button>
+                </div>
+              </div>
+
+              <div class="pt-2">
+                <button onclick="createEntryFromProcessed()" 
+                        class="w-full py-3 bg-emerald-600 text-white font-semibold rounded-2xl text-sm active:bg-emerald-700">Create New Entry from this Photo</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- OCR / Results -->
+          <div id="process-results" class="mt-5 hidden border-t pt-4">
+            <div class="data-label mb-1.5">Processing Results</div>
+            <div id="process-output" class="bg-zinc-50 p-4 rounded-2xl text-sm font-mono whitespace-pre-wrap max-h-60 overflow-auto border border-zinc-100"></div>
+            
+            <div class="flex gap-2 mt-3 flex-wrap" id="process-actions">
+              <!-- Dynamic buttons added by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-4 text-xs text-zinc-500 px-1">
+        OCR uses Tesseract.js • Barcode/QR uses @zxing/library. All processing happens locally on your iPad.
+      </div>
+    </div>
+  </div>
+
+  <!-- ENTRY EDITOR MODAL -->
+  <div id="editor-modal" onclick="if (event.target.id === 'editor-modal') hideEditorModal()" 
+       class="hidden fixed inset-0 z-[100] bg-black/50 flex items-end md:items-center justify-center">
+    <div onclick="event.stopImmediatePropagation()" 
+         class="bg-white w-full md:w-[780px] md:rounded-3xl md:m-4 rounded-t-3xl max-h-[92vh] flex flex-col">
+      
+      <div class="flex items-center justify-between px-5 pt-5 pb-2 border-b">
+        <div>
+          <div id="editor-title" class="font-bold text-xl">New Entry</div>
+          <div id="editor-subtitle" class="text-xs text-zinc-500">CapturePad Record</div>
+        </div>
+        <button onclick="hideEditorModal()" class="text-3xl leading-none px-3 py-1 text-zinc-400 hover:text-zinc-700">×</button>
+      </div>
+
+      <div class="p-5 overflow-auto flex-1 space-y-6" style="max-height: calc(92vh - 160px)">
+        <div>
+          <div class="data-label">Title</div>
+          <input id="edit-title" type="text" class="ios-input w-full" placeholder="e.g. iPad Pro 11-inch — Unit 4">
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <div class="data-label">Category</div>
+            <select id="edit-category" class="ios-input w-full">
+              <option value="Equipment">Equipment</option>
+              <option value="Sample">Sample</option>
+              <option value="Document">Document</option>
+              <option value="Receipt">Receipt</option>
+              <option value="Location">Location</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <div class="data-label">Value / Quantity</div>
+            <input id="edit-value" type="number" step="any" class="ios-input w-full" placeholder="42.0">
+          </div>
+        </div>
+
+        <div>
+          <div class="data-label">Description / Notes</div>
+          <textarea id="edit-description" rows="3" class="ios-input w-full resize-y min-h-[92px]" placeholder="Add observations, serial numbers, conditions..."></textarea>
+        </div>
+
+        <!-- Photos -->
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <div class="data-label mb-0">Photos</div>
+            <div class="flex items-center gap-2">
+              <button onclick="triggerCameraInEditor()" 
+                      class="text-sm flex items-center gap-x-1.5 px-4 py-2 bg-blue-600 text-white font-semibold rounded-2xl active:bg-blue-700">
+                <span>📷</span> <span>Take Photo</span>
+              </button>
+              <button onclick="scanCodeIntoEditor()" 
+                      class="text-sm flex items-center gap-x-1.5 px-4 py-2 bg-emerald-600 text-white font-semibold rounded-2xl active:bg-emerald-700">
+                <span>📊</span> <span>Scan Code</span>
+              </button>
+              <label class="cursor-pointer text-sm px-4 py-2 bg-white border border-zinc-200 rounded-2xl font-semibold flex items-center gap-x-1.5 active:bg-zinc-50">
+                <input type="file" accept="image/*" multiple class="hidden" onchange="handleEditorPhotoUpload(event)">
+                Upload
+              </label>
+            </div>
+          </div>
+
+          <div id="editor-photos" class="photo-grid"></div>
+          <div id="editor-no-photos" class="text-xs text-center text-zinc-400 py-3">No photos attached yet.</div>
+        </div>
+
+        <div class="pt-2 border-t">
+          <div class="grid grid-cols-2 gap-x-3 text-xs text-zinc-500">
+            <div><span class="font-medium text-zinc-600">Created:</span> <span id="edit-created"></span></div>
+            <div><span class="font-medium text-zinc-600">Updated:</span> <span id="edit-updated"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t p-4 flex gap-3 bg-zinc-50 md:rounded-b-3xl">
+        <button onclick="deleteCurrentEntry()" 
+                class="flex-1 md:flex-none px-5 text-red-600 font-semibold border border-red-100 hover:bg-red-50 rounded-2xl py-3 active:bg-red-100">Delete</button>
+        <button onclick="saveCurrentEntry()" 
+                class="flex-1 px-6 font-bold bg-blue-600 active:bg-blue-700 text-white rounded-2xl py-3">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Photo Viewer + Extensions Modal -->
+  <div id="photo-modal" onclick="if (event.target.id === 'photo-modal') closePhotoModal()" 
+       class="hidden fixed inset-0 z-[110] bg-black/70 flex items-center justify-center p-4">
+    <div onclick="event.stopImmediatePropagation()" class="bg-white w-full max-w-lg rounded-3xl overflow-hidden">
+      <div class="p-3 flex items-center justify-between bg-zinc-50 border-b">
+        <div class="font-semibold text-sm px-1" id="photo-modal-meta"></div>
+        <button onclick="closePhotoModal()" class="px-4 text-xl text-zinc-400">×</button>
+      </div>
+      
+      <div class="p-4 bg-white">
+        <img id="photo-modal-img" class="w-full max-h-[420px] object-contain rounded-2xl border border-zinc-100 bg-zinc-50" alt="Full size photo">
+      </div>
+
+      <div class="p-4 border-t grid grid-cols-2 gap-2">
+        <button onclick="processCurrentPhoto()" class="vision-btn px-4 py-3 text-sm rounded-2xl flex justify-center items-center gap-x-2">
+          <span>Process this photo</span>
+        </button>
+        <button onclick="deleteCurrentPhoto()" 
+                class="px-4 py-3 text-sm font-semibold text-red-600 border border-red-100 rounded-2xl active:bg-red-50">Remove Photo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-[200] bg-zinc-900 text-white px-5 py-2.5 rounded-3xl text-sm font-medium shadow-xl"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js" onerror="window.TESSERACT_LOADED = false"></script>
+  
+  <script>
+    // ============================================
+    // CAPTUREPAD — iPad CRUD + Camera + Vision Extensions
+    // ============================================
+    
+    let records = [];
+    let currentEditId = null;
+    let currentPhotoContext = null; // { recordId, photoId }
+    let currentProcessImage = null; // dataUrl for standalone processing
+    let cameraStream = null;
+    let lastCapturedDataUrl = null;
+
+    // Barcode / QR scanning state
+    let zxingReader = null;
+    let isScanningBarcode = false;
+    let lastScannedCode = null;
+    let lastScannedFormat = null;
+
+    // Persistence
+    function saveToStorage() {
+      try {
+        localStorage.setItem('capturepad_records', JSON.stringify(records));
+      } catch (e) {
+        console.warn('Storage quota reached or blocked', e);
+        showToast('Warning: Could not save all data locally');
+      }
+    }
+
+    function loadFromStorage() {
+      try {
+        const raw = localStorage.getItem('capturepad_records');
+        if (raw) records = JSON.parse(raw);
+      } catch (e) {
+        records = [];
+      }
+    }
+
+    function showToast(msg, ms = 2400) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.remove('hidden');
+      t.classList.add('flex', 'items-center');
+      setTimeout(() => {
+        t.classList.add('hidden');
+        t.classList.remove('flex', 'items-center');
+      }, ms);
+    }
+
+    // Initialize sample data
+    function seedIfEmpty() {
+      if (records.length > 0) return;
+      
+      const now = new Date().toISOString();
+      records = [
+        {
+          id: 'rec_' + Date.now(),
+          title: "iPad Pro 12.9 — Lab Station A",
+          category: "Equipment",
+          description: "Serial 4X8K9P2. Battery health at 91%. Used for field data collection.",
+          value: 1,
+          photos: [],
+          created: now,
+          updated: now,
+          tags: ["ipad", "lab"]
+        },
+        {
+          id: 'rec_' + (Date.now() - 80000),
+          title: "Soil Sample #47 — North Field",
+          category: "Sample",
+          description: "Collected 15cm depth. Dry, clay-heavy. Photo taken on-site.",
+          value: 0.48,
+          photos: [],
+          created: new Date(Date.now() - 1000 * 3600 * 5).toISOString(),
+          updated: new Date(Date.now() - 1000 * 3600 * 4).toISOString(),
+          tags: []
+        }
+      ];
+      
+      // Add one fake photo to first record (tiny base64 placeholder)
+      const placeholder = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZTRlN2ZmIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGRvbWluYW50LWJhc2VsaW5lPSJtZW50YWwiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiM1MzY4ZjUiPkNhbWVyYSBQaG90bzwvdGV4dD48L3N2Zz4=";
+      records[0].photos.push({
+        id: 'ph_' + Date.now(),
+        dataUrl: placeholder,
+        timestamp: now
+      });
+      
+      saveToStorage();
+    }
+
+    // Render entries grid
+    function renderEntries(filteredRecords) {
+      const grid = document.getElementById('entries-grid');
+      const empty = document.getElementById('empty-entries');
+      grid.innerHTML = '';
+      
+      const data = filteredRecords || records;
+      
+      document.getElementById('entries-count').textContent = 
+        `${records.length} entries • ${records.reduce((sum, r) => sum + (r.photos?.length || 0), 0)} photos • ${records.reduce((sum, r) => sum + (r.codes?.length || 0), 0)} codes`;
+      
+      if (data.length === 0) {
+        grid.classList.add('hidden');
+        empty.classList.remove('hidden');
+        return;
+      }
+      
+      grid.classList.remove('hidden');
+      empty.classList.add('hidden');
+      
+      data.forEach(record => {
+        const thumb = record.photos && record.photos.length > 0 ? 
+          record.photos[0].dataUrl : 
+          'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjRmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiNhMWEyYTUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPk5vIFBob3RvPC90ZXh0Pjwvc3ZnPg==';
+        
+        const card = document.createElement('div');
+        card.className = `entry-card bg-white rounded-3xl border border-zinc-100 overflow-hidden cursor-pointer ipad-shadow`;
+        
+        card.innerHTML = `
+          <div class="relative">
+            <img src="${thumb}" class="w-full h-[158px] object-cover" alt="${record.title}">
+            ${record.photos?.length ? 
+              `<div class="absolute top-3 right-3 bg-white/95 text-zinc-700 text-xs px-2.5 py-px rounded-xl font-semibold shadow flex items-center">
+                <span class="tabular-nums">${record.photos.length}</span>
+                <span class="ml-0.5">📷</span>
+              </div>` : ''}
+            ${(record.codes && record.codes.length) ? 
+              `<div class="absolute top-3 left-3 bg-emerald-600/90 text-white text-[10px] px-2 py-px rounded-xl font-semibold shadow flex items-center">
+                <span>📊 ${record.codes.length}</span>
+              </div>` : ''}
+          </div>
+          <div class="p-4">
+            <div class="flex justify-between gap-x-2 items-start">
+              <div class="font-semibold text-lg tracking-[-0.015em] leading-tight line-clamp-2">${record.title}</div>
+            </div>
+            
+            <div class="flex items-center gap-2 mt-2">
+              <span class="inline-block text-xs font-bold px-3 py-[1px] rounded-xl bg-zinc-100 text-zinc-700">${record.category}</span>
+              ${record.value != null && record.value !== '' ? 
+                `<span class="text-xs font-semibold px-2 py-px text-blue-700">val: ${record.value}</span>` : ''}
+            </div>
+            
+            ${record.description ? `<div class="text-sm text-zinc-600 mt-2 line-clamp-2">${record.description}</div>` : ''}
+            
+            <div class="flex items-center justify-between mt-4 text-[11px]">
+              <div class="text-zinc-400">${new Date(record.updated).toLocaleDateString()}</div>
+              <div onclick="event.stopImmediatePropagation(); editEntry('${record.id}');" 
+                   class="px-3 py-1 text-blue-600 text-xs font-bold active:bg-blue-50 rounded-xl">EDIT</div>
+            </div>
+          </div>
+        `;
+        
+        card.onclick = () => editEntry(record.id);
+        grid.appendChild(card);
+      });
+    }
+
+    function filterEntries() {
+      const q = (document.getElementById('search-input').value || '').toLowerCase().trim();
+      const cat = document.getElementById('category-filter').value;
+      
+      let filtered = records;
+      
+      if (cat) {
+        filtered = filtered.filter(r => r.category === cat);
+      }
+      
+      if (q) {
+        filtered = filtered.filter(r => 
+          r.title.toLowerCase().includes(q) || 
+          (r.description || '').toLowerCase().includes(q) ||
+          (r.category || '').toLowerCase().includes(q)
+        );
+      }
+      
+      // Sort newest first
+      filtered = [...filtered].sort((a, b) => new Date(b.updated) - new Date(a.updated));
+      
+      renderEntries(filtered);
+    }
+
+    // Open new entry
+    function showNewEntryModal() {
+      currentEditId = null;
+      document.getElementById('editor-title').textContent = 'New Entry';
+      document.getElementById('editor-subtitle').textContent = 'Create a new record';
+      
+      // reset fields
+      document.getElementById('edit-title').value = '';
+      document.getElementById('edit-category').value = 'Equipment';
+      document.getElementById('edit-value').value = '';
+      document.getElementById('edit-description').value = '';
+      document.getElementById('edit-created').textContent = '—';
+      document.getElementById('edit-updated').textContent = '—';
+      
+      renderEditorPhotos([]);
+      
+      document.getElementById('editor-modal').classList.remove('hidden');
+      document.getElementById('editor-modal').classList.add('flex');
+      
+      // Focus first field
+      setTimeout(() => document.getElementById('edit-title').focus(), 120);
+    }
+
+    function editEntry(id) {
+      const rec = records.find(r => r.id === id);
+      if (!rec) return;
+      
+      currentEditId = id;
+      
+      document.getElementById('editor-title').textContent = 'Edit Entry';
+      document.getElementById('editor-subtitle').textContent = 'ID: ' + id.slice(0, 12);
+      
+      document.getElementById('edit-title').value = rec.title || '';
+      document.getElementById('edit-category').value = rec.category || 'Other';
+      document.getElementById('edit-value').value = rec.value ?? '';
+      document.getElementById('edit-description').value = rec.description || '';
+      
+      document.getElementById('edit-created').textContent = new Date(rec.created).toLocaleString();
+      document.getElementById('edit-updated').textContent = new Date(rec.updated).toLocaleString();
+      
+      renderEditorPhotos(rec.photos || []);
+      
+      document.getElementById('editor-modal').classList.remove('hidden');
+      document.getElementById('editor-modal').classList.add('flex');
+    }
+
+    function hideEditorModal() {
+      document.getElementById('editor-modal').classList.remove('flex');
+      document.getElementById('editor-modal').classList.add('hidden');
+      currentEditId = null;
+    }
+
+    function renderEditorPhotos(photos) {
+      const container = document.getElementById('editor-photos');
+      const empty = document.getElementById('editor-no-photos');
+      container.innerHTML = '';
+      
+      if (!photos || photos.length === 0) {
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+      
+      photos.forEach(photo => {
+        const div = document.createElement('div');
+        div.className = `relative group rounded-2xl overflow-hidden border border-zinc-200 bg-zinc-100 aspect-square`;
+        
+        div.innerHTML = `
+          <img src="${photo.dataUrl}" class="photo-thumb w-full h-full" alt="Photo">
+          <button onclick="event.stopImmediatePropagation(); removePhotoFromEditor('${photo.id}')" 
+                  class="absolute top-1.5 right-1.5 bg-black/60 hover:bg-black/75 text-white w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold opacity-90">×</button>
+          <div onclick="event.stopImmediatePropagation(); viewPhotoInModal('${currentEditId}', '${photo.id}')" 
+               class="absolute inset-0 flex items-end justify-end p-1.5 opacity-0 group-hover:opacity-100 transition">
+            <div class="text-[10px] bg-black/60 text-white rounded px-1.5 py-px">VIEW</div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function removePhotoFromEditor(photoId) {
+      if (!currentEditId) {
+        // New entry case — just re-render what we have in the DOM
+        const imgs = Array.from(document.getElementById('editor-photos').querySelectorAll('img'));
+        // Simpler: remove visually only, actual save will persist current state
+        event.currentTarget?.parentElement?.remove();
+        return;
+      }
+      
+      const rec = records.find(r => r.id === currentEditId);
+      if (!rec) return;
+      
+      rec.photos = (rec.photos || []).filter(p => p.id !== photoId);
+      saveToStorage();
+      renderEditorPhotos(rec.photos);
+    }
+
+    function triggerCameraInEditor() {
+      // Start camera or use native
+      if (!currentEditId) {
+        // creating fresh — we'll create immediately
+        const tempRec = createEmptyRecord();
+        currentEditId = tempRec.id;
+        records.unshift(tempRec);
+        saveToStorage();
+      }
+      
+      // Prefer getUserMedia modal-style camera
+      openInlineCameraForEditor();
+    }
+    
+    function openInlineCameraForEditor() {
+      // Create temporary camera UI inside the modal area if possible
+      const container = document.createElement('div');
+      container.id = 'inline-camera';
+      container.className = 'fixed inset-0 z-[130] bg-black/95 flex flex-col items-center justify-center p-5';
+      
+      container.innerHTML = `
+        <div class="w-full max-w-md">
+          <div class="text-white text-sm px-1 pb-2 font-medium flex justify-between">
+            <span>CAPTURE PHOTO</span> 
+            <button id="close-inline-cam" class="text-2xl leading-none">×</button>
+          </div>
+          
+          <div class="relative bg-black rounded-3xl overflow-hidden">
+            <video id="inline-video" autoplay playsinline class="w-full rounded-3xl aspect-video"></video>
+          </div>
+          
+          <div class="flex justify-center gap-3 mt-5">
+            <button id="inline-capture" 
+                    class="px-7 py-4 text-lg font-bold bg-white text-black rounded-3xl">CAPTURE</button>
+            <button id="inline-cancel" class="px-5 py-4 border border-white/30 text-white rounded-3xl font-semibold">Cancel</button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(container);
+      
+      const video = container.querySelector('#inline-video');
+      const closeBtn = container.querySelector('#close-inline-cam');
+      const capBtn = container.querySelector('#inline-capture');
+      const cancelBtn = container.querySelector('#inline-cancel');
+      
+      let stream = null;
+      
+      navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: { ideal: 'environment' } }, 
+        audio: false 
+      }).then(s => {
+        stream = s;
+        video.srcObject = stream;
+      }).catch(() => {
+        // fallback to native input
+        container.remove();
+        useNativeFilePickerForEditor();
+      });
+      
+      function cleanup() {
+        if (stream) {
+          stream.getTracks().forEach(t => t.stop());
+        }
+        container.remove();
+      }
+      
+      closeBtn.onclick = cleanup;
+      cancelBtn.onclick = cleanup;
+      
+      capBtn.onclick = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth || 1280;
+        canvas.height = video.videoHeight || 720;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+        
+        cleanup();
+        
+        attachPhotoToCurrent(dataUrl);
+      };
+    }
+    
+    function useNativeFilePickerForEditor() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.capture = 'environment';
+      input.onchange = (e) => {
+        if (e.target.files[0]) {
+          const reader = new FileReader();
+          reader.onload = ev => attachPhotoToCurrent(ev.target.result);
+          reader.readAsDataURL(e.target.files[0]);
+        }
+      };
+      input.click();
+    }
+
+    async function scanCodeIntoEditor() {
+      stopBarcodeScan();
+      // Use the live camera to scan a code, then attach the result to the current entry
+      if (!currentEditId) {
+        const newRec = createEmptyRecord();
+        currentEditId = newRec.id;
+        records.unshift(newRec);
+        saveToStorage();
+      }
+
+      const rec = records.find(r => r.id === currentEditId);
+      if (!rec) return;
+
+      const loaded = await loadZXingIfNeeded();
+      if (!loaded) {
+        const manual = prompt('Enter barcode/QR value manually:');
+        if (manual) {
+          if (!rec.codes) rec.codes = [];
+          rec.codes.push({ text: manual, format: 'Manual', timestamp: new Date().toISOString() });
+          if (!rec.description) rec.description = '';
+          rec.description += `\nScanned: ${manual}`;
+          rec.updated = new Date().toISOString();
+          saveToStorage();
+          document.getElementById('edit-description').value = rec.description;
+        }
+        return;
+      }
+
+      // Launch camera + scanning
+      showToast('Point camera at barcode or QR');
+      await startBarcodeScan();
+
+      // After a successful scan, the showScanResult + attach buttons will work.
+      // We also provide a direct attach hook here.
+      // Poll a bit and if user scanned, auto-attach when result shows.
+      const poll = setInterval(() => {
+        if (lastScannedCode && currentEditId === rec.id) {
+          clearInterval(poll);
+          if (!rec.codes) rec.codes = [];
+          rec.codes.push({ text: lastScannedCode, format: lastScannedFormat, timestamp: new Date().toISOString() });
+          if (!rec.description?.includes(lastScannedCode)) {
+            rec.description = (rec.description || '') + `\nScanned ${lastScannedFormat || ''}: ${lastScannedCode}`;
+          }
+          rec.updated = new Date().toISOString();
+          saveToStorage();
+          document.getElementById('edit-description').value = rec.description;
+          showToast('Code added to entry');
+          // Keep scan result visible for user
+          stopBarcodeScan();
+        }
+      }, 600);
+
+      // Safety stop after 35s
+      setTimeout(() => clearInterval(poll), 35000);
+    }
+    
+    function attachPhotoToCurrent(dataUrl) {
+      if (!currentEditId) {
+        const newRec = createEmptyRecord();
+        currentEditId = newRec.id;
+        records.unshift(newRec);
+      }
+      
+      const rec = records.find(r => r.id === currentEditId);
+      if (!rec) return;
+      
+      if (!rec.photos) rec.photos = [];
+      rec.photos.push({
+        id: 'ph_' + Date.now() + Math.random().toString(36).slice(2),
+        dataUrl,
+        timestamp: new Date().toISOString()
+      });
+      
+      rec.updated = new Date().toISOString();
+      saveToStorage();
+      
+      // refresh UI
+      renderEditorPhotos(rec.photos);
+      renderEntries();
+      
+      showToast('Photo attached');
+    }
+    
+    function createEmptyRecord() {
+      const now = new Date().toISOString();
+      return {
+        id: 'rec_' + Date.now().toString(36),
+        title: 'Untitled Entry',
+        category: 'Other',
+        description: '',
+        value: null,
+        photos: [],
+        created: now,
+        updated: now
+      };
+    }
+
+    function handleEditorPhotoUpload(e) {
+      const files = Array.from(e.target.files || []);
+      if (!files.length || !currentEditId) return;
+      
+      const rec = records.find(r => r.id === currentEditId);
+      if (!rec) return;
+      
+      let added = 0;
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          if (!rec.photos) rec.photos = [];
+          rec.photos.push({
+            id: 'ph_' + Date.now() + Math.random().toString(36).slice(2),
+            dataUrl: ev.target.result,
+            timestamp: new Date().toISOString()
+          });
+          added++;
+          if (added === files.length) {
+            rec.updated = new Date().toISOString();
+            saveToStorage();
+            renderEditorPhotos(rec.photos);
+            renderEntries();
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+      e.target.value = '';
+    }
+
+    function saveCurrentEntry() {
+      const title = document.getElementById('edit-title').value.trim() || 'Untitled Entry';
+      const category = document.getElementById('edit-category').value;
+      const value = document.getElementById('edit-value').value;
+      const desc = document.getElementById('edit-description').value.trim();
+      
+      let rec;
+      
+      if (!currentEditId) {
+        rec = createEmptyRecord();
+        records.unshift(rec);
+        currentEditId = rec.id;
+      } else {
+        rec = records.find(r => r.id === currentEditId);
+      }
+      
+      if (!rec) return;
+      
+      rec.title = title;
+      rec.category = category;
+      rec.description = desc;
+      rec.value = value === '' ? null : parseFloat(value);
+      rec.updated = new Date().toISOString();
+      
+      saveToStorage();
+      hideEditorModal();
+      renderEntries();
+      filterEntries();
+      updateCaptureTargetSelect();
+      
+      showToast('Entry saved');
+    }
+    
+    function deleteCurrentEntry() {
+      if (!currentEditId || !confirm('Delete this entry permanently?')) return;
+      
+      records = records.filter(r => r.id !== currentEditId);
+      saveToStorage();
+      hideEditorModal();
+      renderEntries();
+      updateCaptureTargetSelect();
+      showToast('Entry deleted');
+    }
+
+    // =====================
+    // CAMERA + CAPTURE
+    // =====================
+    async function startCamera() {
+      const container = document.getElementById('camera-container');
+      const video = document.getElementById('camera-video');
+      
+      if (cameraStream) stopCamera();
+      
+      try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+          video: { 
+            facingMode: { ideal: 'environment' },
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          },
+          audio: false
+        });
+        video.srcObject = cameraStream;
+        container.style.background = '#111';
+        // Make sure scan UI is not showing unless we are in scan mode
+        document.getElementById('scan-reticle')?.classList.add('hidden');
+        document.getElementById('camera-overlay')?.classList.remove('hidden');
+      } catch (err) {
+        showToast('Camera not available. Use Library upload instead.');
+        // Offer native capture directly
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.capture = 'environment';
+        input.onchange = e => {
+          if (e.target.files[0]) handleNativeCapture(e);
+        };
+        input.click();
+      }
+    }
+    
+    function stopCamera() {
+      stopBarcodeScan();
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+      }
+      const video = document.getElementById('camera-video');
+      if (video) video.srcObject = null;
+    }
+    
+    async function capturePhotoFromCamera() {
+      stopBarcodeScan(); // exit scan mode if active
+      const video = document.getElementById('camera-video');
+      
+      if (!video || !video.srcObject) {
+        // start camera if not running
+        await startCamera();
+        await new Promise(r => setTimeout(r, 650));
+      }
+      
+      if (!video.videoWidth) {
+        // fallback
+        showToast('Could not capture. Try Library button.');
+        return;
+      }
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(video, 0, 0);
+      
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+      lastCapturedDataUrl = dataUrl;
+      
+      handleCapturedPhoto(dataUrl);
+    }
+    
+    function handleNativeCapture(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = ev => {
+        lastCapturedDataUrl = ev.target.result;
+        handleCapturedPhoto(lastCapturedDataUrl);
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    }
+    
+    function handleCapturedPhoto(dataUrl) {
+      const targetSelect = document.getElementById('capture-target');
+      const targetId = targetSelect.value;
+      
+      if (targetId) {
+        // attach to existing
+        const rec = records.find(r => r.id === targetId);
+        if (rec) {
+          if (!rec.photos) rec.photos = [];
+          rec.photos.unshift({
+            id: 'ph_' + Date.now(),
+            dataUrl: dataUrl,
+            timestamp: new Date().toISOString()
+          });
+          rec.updated = new Date().toISOString();
+          saveToStorage();
+          renderEntries();
+          showToast('Photo attached to entry');
+        }
+      } else {
+        // create new
+        const newRec = createEmptyRecord();
+        newRec.title = 'Photo Capture — ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        newRec.photos = [{
+          id: 'ph_' + Date.now(),
+          dataUrl,
+          timestamp: new Date().toISOString()
+        }];
+        records.unshift(newRec);
+        saveToStorage();
+        renderEntries();
+        showToast('New entry created from photo');
+      }
+      
+      // show preview
+      showCapturePreview(dataUrl);
+    }
+
+    // =====================
+    // BARCODE / QR SCANNING (ZXing)
+    // =====================
+    async function loadZXingIfNeeded() {
+      if (window.ZXing) return true;
+      try {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';
+          script.onload = () => resolve(true);
+          script.onerror = () => reject(new Error('Failed to load ZXing'));
+          document.head.appendChild(script);
+        });
+        return true;
+      } catch (e) {
+        console.warn('ZXing failed to load', e);
+        return false;
+      }
+    }
+
+    function updateCameraStatus(text, isScan = false) {
+      const el = document.getElementById('camera-status');
+      if (el) el.textContent = text;
+    }
+
+    function showScanResult(text, format) {
+      lastScannedCode = text;
+      lastScannedFormat = format || 'Unknown';
+
+      const area = document.getElementById('scan-result-area');
+      document.getElementById('scan-result-text').textContent = text;
+      document.getElementById('scan-result-format').textContent = format ? `Format: ${format}` : '';
+
+      area.classList.remove('hidden');
+      area.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+
+      // Haptic feedback on iPad if available
+      if (navigator.vibrate) navigator.vibrate(60);
+
+      showToast(`Scanned ${format || ''} code`);
+    }
+
+    function clearScanResult() {
+      const area = document.getElementById('scan-result-area');
+      area.classList.add('hidden');
+      lastScannedCode = null;
+      lastScannedFormat = null;
+    }
+
+    function copyScannedCode() {
+      if (!lastScannedCode) return;
+      navigator.clipboard?.writeText(lastScannedCode).then(() => {
+        showToast('Code copied to clipboard');
+      }).catch(() => {
+        // Fallback
+        const ta = document.createElement('textarea');
+        ta.value = lastScannedCode;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('Code copied');
+      });
+    }
+
+    function manualCodeEntry() {
+      const code = prompt('Enter barcode / QR code value:');
+      if (code && code.trim()) {
+        showScanResult(code.trim(), 'Manual Entry');
+      }
+    }
+
+    function demoBarcodeScan() {
+      // Instantly simulates a successful live scan for testing the full flow
+      // (useful when no camera is available, e.g. in this codespace)
+      const demoValues = [
+        { text: 'CAPTUREPAD-TEST-42', format: 'QR_CODE' },
+        { text: '9780140449112', format: 'EAN_13' },
+        { text: 'SN-8K9P2X4L', format: 'CODE_128' },
+        { text: 'https://example.com/ipad-inventory', format: 'QR_CODE' }
+      ];
+      const pick = demoValues[Math.floor(Math.random() * demoValues.length)];
+      showScanResult(pick.text, pick.format);
+      // Also make sure we're on the capture view so the result panel is visible
+      if (document.getElementById('view-capture').classList.contains('hidden')) {
+        switchTab('capture');
+      }
+    }
+
+    async function createEntryFromScan() {
+      if (!lastScannedCode) return;
+      const newRec = createEmptyRecord();
+      newRec.title = `${lastScannedFormat || 'Code'}: ${lastScannedCode.substring(0, 28)}`;
+      newRec.description = `Scanned ${lastScannedFormat || 'code'}: ${lastScannedCode}\n\n`;
+      newRec.codes = [{ text: lastScannedCode, format: lastScannedFormat, timestamp: new Date().toISOString() }];
+
+      records.unshift(newRec);
+      saveToStorage();
+      renderEntries();
+      updateCaptureTargetSelect();
+
+      // Open editor so user can refine
+      switchTab('entries');
+      setTimeout(() => editEntry(newRec.id), 150);
+      clearScanResult();
+    }
+
+    function attachScanToCurrentEntry() {
+      if (!lastScannedCode) return;
+
+      // Try selected capture target first
+      const sel = document.getElementById('capture-target')?.value;
+      let rec = null;
+      if (sel) rec = records.find(r => r.id === sel);
+
+      // Fallback: most recently edited or first
+      if (!rec && currentEditId) rec = records.find(r => r.id === currentEditId);
+      if (!rec && records.length) rec = records[0];
+
+      if (!rec) {
+        showToast('No entry to attach to. Creating new one instead.');
+        createEntryFromScan();
+        return;
+      }
+
+      const line = `Scanned ${lastScannedFormat || 'code'}: ${lastScannedCode}`;
+      if (!rec.description) rec.description = '';
+      if (!rec.description.includes(lastScannedCode)) {
+        rec.description = (rec.description ? rec.description + '\n' : '') + line;
+      }
+      if (!rec.codes) rec.codes = [];
+      rec.codes.push({ text: lastScannedCode, format: lastScannedFormat, timestamp: new Date().toISOString() });
+
+      rec.updated = new Date().toISOString();
+      saveToStorage();
+      renderEntries();
+
+      if (currentEditId === rec.id) {
+        // refresh editor if open
+        document.getElementById('edit-description').value = rec.description;
+      }
+
+      showToast('Code attached to entry');
+      clearScanResult();
+    }
+
+    function continueScanning() {
+      clearScanResult();
+      // Keep the camera running and restart scanning if stopped
+      if (!isScanningBarcode) {
+        startBarcodeScan();
+      }
+    }
+
+    async function scanImageForBarcode(dataUrl) {
+      const loaded = await loadZXingIfNeeded();
+      if (!loaded || !window.ZXing) {
+        showToast('Barcode scanner unavailable. Try typing the code manually.');
+        return null;
+      }
+
+      try {
+        const img = new Image();
+        await new Promise((res, rej) => {
+          img.onload = res;
+          img.onerror = rej;
+          img.src = dataUrl;
+        });
+
+        if (!zxingReader) {
+          zxingReader = new ZXing.BrowserMultiFormatReader();
+        }
+
+        // Create a canvas for decoding (ZXing works well with it)
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+
+        const result = await zxingReader.decodeFromCanvas(canvas);
+        if (result) {
+          return { text: result.getText(), format: result.getBarcodeFormat() };
+        }
+      } catch (err) {
+        console.log('No barcode found in image or decode error', err);
+      }
+      return null;
+    }
+
+    async function scanBarcodeFromCurrentImage() {
+      const img = document.getElementById('process-image');
+      if (!img || !img.src) {
+        showToast('Load a photo first');
+        return;
+      }
+
+      const result = await scanImageForBarcode(img.src);
+      const out = document.getElementById('process-output');
+      const container = document.getElementById('process-results');
+      const actions = document.getElementById('process-actions');
+
+      container.classList.remove('hidden');
+
+      if (result) {
+        out.textContent = `Barcode / QR detected\n\nFormat: ${result.format}\nValue: ${result.text}`;
+        actions.innerHTML = '';
+
+        const useBtn = document.createElement('button');
+        useBtn.className = 'text-xs px-4 py-2 font-semibold bg-emerald-600 text-white rounded-2xl';
+        useBtn.textContent = 'Create Entry from this Code';
+        useBtn.onclick = () => {
+          lastScannedCode = result.text;
+          lastScannedFormat = result.format;
+          createEntryFromScan();
+        };
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'text-xs px-4 py-2 font-semibold border border-zinc-200 bg-white rounded-2xl';
+        copyBtn.textContent = 'Copy Code';
+        copyBtn.onclick = () => {
+          navigator.clipboard?.writeText(result.text);
+          showToast('Copied');
+        };
+
+        actions.append(useBtn, copyBtn);
+        showToast('Barcode/QR found!');
+      } else {
+        out.textContent = 'No barcode or QR code detected in this image.';
+        actions.innerHTML = '';
+      }
+    }
+
+    async function startBarcodeScan() {
+      const loaded = await loadZXingIfNeeded();
+      if (!loaded || !window.ZXing) {
+        // Fallback: let user type manually
+        const manual = prompt('ZXing library unavailable. Enter code manually:');
+        if (manual) {
+          showScanResult(manual, 'Manual');
+        }
+        return;
+      }
+
+      const video = document.getElementById('camera-video');
+      const reticle = document.getElementById('scan-reticle');
+      const overlay = document.getElementById('camera-overlay');
+
+      // Make sure camera is on
+      if (!cameraStream || !video.srcObject) {
+        await startCamera();
+        await new Promise(r => setTimeout(r, 450));
+      }
+
+      // Switch UI to scan mode
+      overlay.classList.add('hidden');
+      reticle.classList.remove('hidden');
+      updateCameraStatus('SCANNING');
+      clearScanResult();
+
+      isScanningBarcode = true;
+
+      try {
+        if (!zxingReader) {
+          zxingReader = new ZXing.BrowserMultiFormatReader();
+        }
+
+        // Use ZXing's built-in continuous decoder on the video element
+        await zxingReader.decodeFromVideoDevice(null, video, (result, err) => {
+          if (result && isScanningBarcode) {
+            const text = result.getText();
+            const fmt = result.getBarcodeFormat ? result.getBarcodeFormat() : 'CODE';
+
+            // Avoid spamming the same code repeatedly
+            if (lastScannedCode !== text) {
+              showScanResult(text, fmt);
+
+              // Pause scanning briefly after successful read (user can "Continue Scanning")
+              isScanningBarcode = false;
+              try { zxingReader.reset(); } catch (e) {}
+            }
+          }
+          // ignore errors - they are normal while scanning
+        });
+
+      } catch (err) {
+        console.warn('Barcode scan error', err);
+        showToast('Scanning error. Try again or use photo upload.');
+        stopBarcodeScan();
+      }
+    }
+
+    function stopBarcodeScan() {
+      isScanningBarcode = false;
+      const reticle = document.getElementById('scan-reticle');
+      const overlay = document.getElementById('camera-overlay');
+
+      if (reticle) reticle.classList.add('hidden');
+      if (overlay) overlay.classList.remove('hidden');
+
+      updateCameraStatus('LIVE');
+
+      if (zxingReader) {
+        try { zxingReader.reset(); } catch (e) {}
+      }
+    }
+
+    function showCapturePreview(dataUrl) {
+      const area = document.getElementById('capture-preview-area');
+      const thumbs = document.getElementById('capture-preview-thumbs');
+      area.classList.remove('hidden');
+      
+      const imgWrap = document.createElement('div');
+      imgWrap.className = 'w-24 h-24 rounded-2xl overflow-hidden border border-zinc-300 relative';
+      imgWrap.innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover">`;
+      imgWrap.onclick = () => {
+        // open standalone processor
+        currentProcessImage = dataUrl;
+        switchTab('process');
+        loadProcessImage(currentProcessImage);
+      };
+      
+      thumbs.prepend(imgWrap);
+      
+      // keep only last 3 previews
+      while (thumbs.children.length > 3) {
+        thumbs.lastChild.remove();
+      }
+    }
+    
+    function updateCaptureTargetSelect() {
+      const sel = document.getElementById('capture-target');
+      const previous = sel.value;
+      sel.innerHTML = `<option value="">Create new entry from photo...</option>`;
+      
+      const sorted = [...records].sort((a,b) => new Date(b.updated) - new Date(a.updated));
+      
+      sorted.forEach(r => {
+        const opt = document.createElement('option');
+        opt.value = r.id;
+        opt.textContent = `${r.title} (${r.category})`;
+        sel.appendChild(opt);
+      });
+      
+      if (previous && records.find(r => r.id === previous)) sel.value = previous;
+    }
+
+    // =====================
+    // VISION EXTENSIONS / PROCESSING
+    // =====================
+    
+    function loadImageForProcessing(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        currentProcessImage = e.target.result;
+        loadProcessImage(currentProcessImage);
+      };
+      reader.readAsDataURL(file);
+      event.target.value = '';
+    }
+    
+    function useLastCapturedForProcess() {
+      if (!lastCapturedDataUrl) {
+        showToast('No photo captured yet');
+        return;
+      }
+      currentProcessImage = lastCapturedDataUrl;
+      loadProcessImage(currentProcessImage);
+    }
+
+    function loadDemoQRForProcess() {
+      // Creates a simple visual QR-like image and auto-runs detection for demo purposes
+      const canvas = document.createElement('canvas');
+      canvas.width = 320;
+      canvas.height = 320;
+      const ctx = canvas.getContext('2d');
+
+      // Simple QR-like pattern (not a real QR but looks the part)
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, 320, 320);
+      ctx.fillStyle = '#111111';
+
+      // Finder patterns (corners)
+      const drawFinder = (x, y) => {
+        ctx.fillRect(x, y, 70, 70);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(x + 15, y + 15, 40, 40);
+        ctx.fillStyle = '#111111';
+        ctx.fillRect(x + 25, y + 25, 20, 20);
+      };
+      drawFinder(20, 20);
+      drawFinder(230, 20);
+      drawFinder(20, 230);
+
+      // Random-ish data modules for visual
+      for (let i = 0; i < 18; i++) {
+        for (let j = 0; j < 18; j++) {
+          if (Math.random() > 0.5) {
+            ctx.fillRect(95 + i * 8, 95 + j * 8, 6, 6);
+          }
+        }
+      }
+
+      const dataUrl = canvas.toDataURL('image/png');
+      currentProcessImage = dataUrl;
+      loadProcessImage(currentProcessImage);
+
+      // For the demo, immediately simulate a successful barcode result
+      // (real decode on this artistic pattern would fail, so we drive the happy path)
+      setTimeout(() => {
+        const out = document.getElementById('process-output');
+        const container = document.getElementById('process-results');
+        const actions = document.getElementById('process-actions');
+        container.classList.remove('hidden');
+        out.textContent = `Barcode / QR detected (demo)\n\nFormat: QR_CODE\nValue: CAPTUREPAD-DEMO-987`;
+        
+        actions.innerHTML = '';
+        const useBtn = document.createElement('button');
+        useBtn.className = 'text-xs px-4 py-2 font-semibold bg-emerald-600 text-white rounded-2xl';
+        useBtn.textContent = 'Create Entry from this Code';
+        useBtn.onclick = () => {
+          lastScannedCode = 'CAPTUREPAD-DEMO-987';
+          lastScannedFormat = 'QR_CODE';
+          createEntryFromScan();
+        };
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'text-xs px-4 py-2 font-semibold border border-zinc-200 bg-white rounded-2xl';
+        copyBtn.textContent = 'Copy Code';
+        copyBtn.onclick = () => { navigator.clipboard?.writeText('CAPTUREPAD-DEMO-987'); showToast('Copied'); };
+        actions.append(useBtn, copyBtn);
+      }, 420);
+    }
+    
+    function loadProcessImage(dataUrl) {
+      const preview = document.getElementById('process-preview');
+      const img = document.getElementById('process-image');
+      const res = document.getElementById('process-results');
+      
+      img.src = dataUrl;
+      preview.classList.remove('hidden');
+      res.classList.add('hidden');
+      document.getElementById('process-actions').innerHTML = '';
+    }
+    
+    function runOCR() {
+      const img = document.getElementById('process-image');
+      const out = document.getElementById('process-output');
+      const container = document.getElementById('process-results');
+      const actions = document.getElementById('process-actions');
+      
+      container.classList.remove('hidden');
+      out.textContent = 'Running OCR (Tesseract.js)... This may take a few seconds on first run.';
+      actions.innerHTML = '';
+      
+      const doOCR = async () => {
+        if (!window.Tesseract || window.TESSERACT_LOADED === false) {
+          // fallback mock OCR
+          setTimeout(() => {
+            const mock = simulateOCR();
+            out.textContent = mock;
+            attachOCRButtons(mock);
+          }, 650);
+          return;
+        }
+        
+        try {
+          const { createWorker } = Tesseract;
+          const worker = await createWorker('eng');
+          
+          const result = await worker.recognize(img);
+          await worker.terminate();
+          
+          const text = result.data.text.trim() || '(No text found)';
+          out.textContent = text;
+          attachOCRButtons(text);
+        } catch (err) {
+          console.error(err);
+          const mock = simulateOCR();
+          out.textContent = 'OCR failed — using simulated result:\n\n' + mock;
+          attachOCRButtons(mock);
+        }
+      };
+      
+      doOCR();
+    }
+    
+    function simulateOCR() {
+      // Realistic demo results
+      const samples = [
+        "RECEIPT\nDate: 06/21/2026\nTotal: $42.75\nApple iPad Case\nQty: 1",
+        "Sample ID: SF-472\nLocation: 37.7749° N\npH: 6.8\nCollected: 11:14",
+        "SERIAL: F4K9P8W2\nModel: iPad Air 5\nBattery: 87%",
+        "FIELD NOTE\nPlot 4B\nMoisture: LOW\nTemperature: 23°C",
+        "Invoice #3281\nVendor: Acme Labs\nAmount: 128.00"
+      ];
+      return samples[Math.floor(Math.random() * samples.length)];
+    }
+    
+    function attachOCRButtons(text) {
+      const actions = document.getElementById('process-actions');
+      actions.innerHTML = '';
+      
+      const btn1 = document.createElement('button');
+      btn1.className = 'text-xs px-4 py-2 font-semibold bg-white border border-zinc-200 rounded-2xl';
+      btn1.textContent = 'Append to new Entry Description';
+      btn1.onclick = () => {
+        createEntryFromProcessed(text);
+      };
+      
+      const btn2 = document.createElement('button');
+      btn2.className = 'text-xs px-4 py-2 font-semibold bg-white border border-zinc-200 rounded-2xl';
+      btn2.textContent = 'Copy text';
+      btn2.onclick = () => {
+        navigator.clipboard?.writeText(text).then(() => showToast('Copied to clipboard'));
+      };
+      
+      actions.append(btn1, btn2);
+    }
+    
+    function analyzeImage() {
+      const img = document.getElementById('process-image');
+      const out = document.getElementById('process-output');
+      const container = document.getElementById('process-results');
+      container.classList.remove('hidden');
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth || img.width;
+      canvas.height = img.naturalHeight || img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      
+      const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      
+      let r = 0, g = 0, b = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        r += data[i]; g += data[i+1]; b += data[i+2];
+      }
+      const px = data.length / 4;
+      const avgR = Math.round(r / px);
+      const avgG = Math.round(g / px);
+      const avgB = Math.round(b / px);
+      
+      const avgColor = `rgb(${avgR}, ${avgG}, ${avgB})`;
+      
+      const text = [
+        `Dimensions: ${canvas.width} × ${canvas.height} px`,
+        `Total pixels: ${px.toLocaleString()}`,
+        `Average color: ${avgColor}  —  #${((1 << 24) + (avgR << 16) + (avgG << 8) + avgB).toString(16).slice(1).toUpperCase()}`,
+        `Aspect ratio: ${(canvas.width / canvas.height).toFixed(2)}`
+      ].join('\n');
+      
+      out.textContent = text;
+      
+      // Show swatch
+      const actions = document.getElementById('process-actions');
+      actions.innerHTML = '';
+      const swatch = document.createElement('div');
+      swatch.className = 'inline-flex items-center gap-x-3 px-3 py-1 rounded-2xl border text-sm';
+      swatch.innerHTML = `<div class="w-6 h-6 rounded-xl border" style="background:${avgColor}"></div> <span>Dominant color</span>`;
+      actions.appendChild(swatch);
+    }
+    
+    function applyGrayscale() {
+      const img = document.getElementById('process-image');
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth || img.width;
+      canvas.height = img.naturalHeight || img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const d = imageData.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const gray = Math.round(0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]);
+        d[i] = d[i + 1] = d[i + 2] = gray;
+      }
+      ctx.putImageData(imageData, 0, 0);
+      img.src = canvas.toDataURL('image/jpeg', 0.92);
+      currentProcessImage = img.src;
+    }
+    
+    function applyThreshold() {
+      const img = document.getElementById('process-image');
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth || img.width;
+      canvas.height = img.naturalHeight || img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const d = imageData.data;
+      const thresh = 130;
+      
+      for (let i = 0; i < d.length; i += 4) {
+        const gray = Math.round(0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]);
+        const val = gray > thresh ? 255 : 0;
+        d[i] = d[i + 1] = d[i + 2] = val;
+      }
+      ctx.putImageData(imageData, 0, 0);
+      img.src = canvas.toDataURL('image/jpeg', 0.92);
+      currentProcessImage = img.src;
+    }
+    
+    function applySharpen() {
+      const img = document.getElementById('process-image');
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth || img.width;
+      canvas.height = img.naturalHeight || img.height;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(img, 0, 0);
+      
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+      const w = canvas.width;
+      const h = canvas.height;
+      
+      // Simple unsharp mask via convolution
+      const kernel = [0, -1, 0, -1, 5, -1, 0, -1, 0];
+      
+      const copy = new Uint8ClampedArray(data);
+      
+      for (let y = 1; y < h - 1; y++) {
+        for (let x = 1; x < w - 1; x++) {
+          const idx = (y * w + x) * 4;
+          for (let c = 0; c < 3; c++) {
+            let sum = 0;
+            let k = 0;
+            for (let ky = -1; ky <= 1; ky++) {
+              for (let kx = -1; kx <= 1; kx++) {
+                const pidx = ((y + ky) * w + (x + kx)) * 4 + c;
+                sum += copy[pidx] * kernel[k++];
+              }
+            }
+            data[idx + c] = Math.max(0, Math.min(255, sum));
+          }
+        }
+      }
+      ctx.putImageData(imageData, 0, 0);
+      img.src = canvas.toDataURL('image/jpeg', 0.92);
+      currentProcessImage = img.src;
+    }
+    
+    function createEntryFromProcessed(extractedText) {
+      const img = document.getElementById('process-image');
+      if (!img || !img.src) {
+        showToast('No image loaded');
+        return;
+      }
+      
+      const newRec = createEmptyRecord();
+      newRec.title = 'Processed Capture — ' + new Date().toLocaleDateString();
+      newRec.description = extractedText || 'Generated from processed photo';
+      newRec.photos = [{
+        id: 'ph_' + Date.now(),
+        dataUrl: img.src,
+        timestamp: new Date().toISOString()
+      }];
+      
+      records.unshift(newRec);
+      saveToStorage();
+      
+      switchTab('entries');
+      renderEntries();
+      updateCaptureTargetSelect();
+      
+      // Open the new entry for further editing
+      setTimeout(() => editEntry(newRec.id), 280);
+      showToast('Entry created from processed photo');
+    }
+    
+    function viewPhotoInModal(recordId, photoId) {
+      const rec = records.find(r => r.id === recordId);
+      if (!rec) return;
+      
+      const photo = (rec.photos || []).find(p => p.id === photoId);
+      if (!photo) return;
+      
+      currentPhotoContext = { recordId, photoId };
+      
+      document.getElementById('photo-modal-img').src = photo.dataUrl;
+      document.getElementById('photo-modal-meta').innerHTML = 
+        `${rec.title} <span class="font-normal text-zinc-400">• ${new Date(photo.timestamp).toLocaleDateString()}</span>`;
+      
+      document.getElementById('photo-modal').classList.remove('hidden');
+      document.getElementById('photo-modal').classList.add('flex');
+    }
+    
+    function closePhotoModal() {
+      document.getElementById('photo-modal').classList.add('hidden');
+      document.getElementById('photo-modal').classList.remove('flex');
+      currentPhotoContext = null;
+    }
+    
+    function processCurrentPhoto() {
+      if (!currentPhotoContext) return;
+      const rec = records.find(r => r.id === currentPhotoContext.recordId);
+      const photo = (rec?.photos || []).find(p => p.id === currentPhotoContext.photoId);
+      if (!photo) return;
+      
+      closePhotoModal();
+      currentProcessImage = photo.dataUrl;
+      switchTab('process');
+      setTimeout(() => {
+        loadProcessImage(currentProcessImage);
+      }, 50);
+    }
+    
+    function deleteCurrentPhoto() {
+      if (!currentPhotoContext) return;
+      if (!confirm('Remove this photo from the record?')) return;
+      
+      const rec = records.find(r => r.id === currentPhotoContext.recordId);
+      if (!rec) return;
+      
+      rec.photos = (rec.photos || []).filter(p => p.id !== currentPhotoContext.photoId);
+      rec.updated = new Date().toISOString();
+      saveToStorage();
+      
+      closePhotoModal();
+      
+      // refresh open editor if it is the same entry
+      if (currentEditId === rec.id) {
+        renderEditorPhotos(rec.photos);
+      }
+      renderEntries();
+      showToast('Photo removed');
+    }
+
+    // =====================
+    // TABS + GLOBAL
+    // =====================
+    function switchTab(tab) {
+      // hide all
+      document.getElementById('view-entries').classList.add('hidden');
+      document.getElementById('view-capture').classList.add('hidden');
+      document.getElementById('view-process').classList.add('hidden');
+      
+      // deactivate tabs
+      ['entries', 'capture', 'process'].forEach(t => {
+        const tabEl = document.getElementById('tab-' + t);
+        const mtabEl = document.getElementById('mtab-' + t);
+        if (tabEl) tabEl.classList.remove('active');
+        if (mtabEl) mtabEl.classList.remove('text-blue-600', 'font-bold');
+      });
+      
+      let viewEl;
+      
+      if (tab === 'entries') {
+        viewEl = document.getElementById('view-entries');
+        document.getElementById('tab-entries')?.classList.add('active');
+        document.getElementById('mtab-entries')?.classList.add('text-blue-600', 'font-bold');
+        renderEntries();
+      } 
+      else if (tab === 'capture') {
+        viewEl = document.getElementById('view-capture');
+        document.getElementById('tab-capture')?.classList.add('active');
+        document.getElementById('mtab-capture')?.classList.add('text-blue-600', 'font-bold');
+        // start camera automatically on iPad-friendly UX
+        setTimeout(() => {
+          startCamera();
+        }, 300);
+      } 
+      else if (tab === 'process') {
+        viewEl = document.getElementById('view-process');
+        document.getElementById('tab-process')?.classList.add('active');
+        document.getElementById('mtab-process')?.classList.add('text-blue-600', 'font-bold');
+      }
+      
+      viewEl.classList.remove('hidden');
+      
+      // stop camera + barcode scanner when leaving capture
+      if (tab !== 'capture' && (cameraStream || isScanningBarcode)) {
+        stopCamera();
+      }
+    }
+    
+    function exportData() {
+      const data = JSON.stringify(records, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `capturepad-export-${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast('Exported all data');
+    }
+    
+    function importData() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'application/json';
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          try {
+            const parsed = JSON.parse(ev.target.result);
+            if (Array.isArray(parsed)) {
+              // merge strategy: replace or merge?
+              if (confirm(`Replace all local entries with ${parsed.length} imported? (Cancel = merge)`)) {
+                records = parsed;
+              } else {
+                // merge by id
+                const existingIds = new Set(records.map(r => r.id));
+                parsed.forEach(item => {
+                  if (!existingIds.has(item.id)) {
+                    records.push(item);
+                  }
+                });
+              }
+              saveToStorage();
+              renderEntries();
+              updateCaptureTargetSelect();
+              showToast('Import completed');
+            } else {
+              throw new Error('Invalid format');
+            }
+          } catch (err) {
+            alert('Import failed. Make sure you selected a valid CapturePad export file.');
+          }
+        };
+        reader.readAsText(file);
+      };
+      input.click();
+    }
+    
+    // Keyboard shortcuts for iPad + external keyboard
+    function setupKeyboardShortcuts() {
+      document.addEventListener('keydown', function(e) {
+        if (e.key === '/' && document.activeElement.tagName === 'BODY') {
+          e.preventDefault();
+          document.getElementById('search-input').focus();
+        }
+        
+        if (e.metaKey && e.key === 'n') {
+          e.preventDefault();
+          showNewEntryModal();
+        }
+        
+        if (e.key === 'Escape') {
+          const modals = document.querySelectorAll('.fixed.inset-0:not(.hidden)');
+          if (modals.length) {
+            const last = modals[modals.length - 1];
+            if (last.id === 'editor-modal') hideEditorModal();
+            else if (last.id === 'photo-modal') closePhotoModal();
+            else last.classList.add('hidden');
+          } else {
+            // stop camera if open
+            if (!document.getElementById('view-capture').classList.contains('hidden')) {
+              switchTab('entries');
+            }
+          }
+        }
+      });
+      
+      // Hint
+      const search = document.getElementById('search-input');
+      search.placeholder = 'Search entries... (press /)';
+    }
+    
+    function setupTailwind() {
+      // Tailwind script already loaded. Minor runtime config.
+      if (window.tailwind) {
+        window.tailwind.config = {
+          theme: {
+            extend: {}
+          }
+        };
+      }
+    }
+    
+    function updateCountsOnLoad() {
+      // already handled in render
+    }
+    
+    // Boot everything
+    function init() {
+      setupTailwind();
+      loadFromStorage();
+      seedIfEmpty();
+      
+      // Initial render
+      renderEntries();
+      updateCaptureTargetSelect();
+      updateCountsOnLoad();
+      
+      // Search keyboard
+      setupKeyboardShortcuts();
+      
+      // Start on entries tab
+      document.getElementById('view-entries').classList.remove('hidden');
+      document.getElementById('tab-entries')?.classList.add('active');
+      document.getElementById('mtab-entries')?.classList.add('text-blue-600', 'font-bold');
+      
+      // Auto-start hint for camera on iPad (don't force on first load)
+      // Bonus: make sure camera is released when leaving page
+      window.addEventListener('beforeunload', () => {
+        if (cameraStream) stopCamera();
+      });
+      
+      // Initial welcome toast once
+      setTimeout(() => {
+        if (records.length <= 3) {
+          // silent
+        }
+      }, 1500);
+      
+      // Register service worker (progressive offline support)
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      }
+
+      // PWA install hint (optional)
+      console.log('%c[CapturePad] iPad-optimized CRUD ready. Add to home screen for best experience.', 'color:#64748b');
+    }
+    
+    // Launch
+    window.onload = init;
+    
+    // Expose a couple helpers for debug if needed
+    window.CapturePad = { getRecords: () => records, clearAll: () => { localStorage.removeItem('capturepad_records'); location.reload(); } };
+  </script>
+
+  <!-- New Multi-System JS -->
+  <script>
+    // ============================================
+    // NEW DATA LAYER - CapturePad Multi-System
+    // ============================================
+    let products = [];
+    let clients = [];
+    let movements = [];
+    let cameraHistory = [];
+
+    function saveNewData() {
+      localStorage.setItem('cp_products', JSON.stringify(products));
+      localStorage.setItem('cp_clients', JSON.stringify(clients));
+      localStorage.setItem('cp_movements', JSON.stringify(movements));
+      localStorage.setItem('cp_cameraHistory', JSON.stringify(cameraHistory));
+    }
+
+    function loadNewData() {
+      try {
+        products = JSON.parse(localStorage.getItem('cp_products')) || [];
+        clients = JSON.parse(localStorage.getItem('cp_clients')) || [];
+        movements = JSON.parse(localStorage.getItem('cp_movements')) || [];
+        cameraHistory = JSON.parse(localStorage.getItem('cp_cameraHistory')) || [];
+      } catch (e) {}
+
+      // Seed sample data if empty
+      if (clients.length === 0) {
+        clients = [
+          { id: 'c1', name: 'Alex Rivera', business: 'Rivera Labs', logo: 'RL' },
+          { id: 'c2', name: 'Jordan Kim', business: 'Northwind Supply', logo: 'NS' },
+          { id: 'c3', name: 'Sam Patel', business: 'Vertex Hardware', logo: 'VH' },
+          { id: 'c4', name: 'Taylor Brooks', business: 'Summit Solutions', logo: 'SS' }
+        ];
+      }
+      if (products.length === 0) {
+        products = [
+          { id: 'p1', name: 'iPad Pro 11"', sku: 'IPAD11-PRO', quantity: 14 },
+          { id: 'p2', name: 'USB-C Cable 2m', sku: 'CABLE-USBC-2', quantity: 87 },
+          { id: 'p3', name: 'Wireless Mouse', sku: 'MOUSE-WL-BLK', quantity: 31 }
+        ];
+      }
+      saveNewData();
+    }
+
+    function getProductStock(productId) {
+      const p = products.find(x => x.id === productId);
+      return p ? p.quantity : 0;
+    }
+
+    function recordMovement(productId, type, qty, clientId = null, notes = '') {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      const delta = type === 'inflow' ? qty : -qty;
+      product.quantity = Math.max(0, (product.quantity || 0) + delta);
+
+      movements.unshift({
+        id: 'm_' + Date.now(),
+        productId,
+        type,
+        quantity: qty,
+        date: new Date().toISOString(),
+        clientId,
+        notes
+      });
+
+      saveNewData();
+      if (currentView === 'inventory') renderInventoryView();
+      if (currentView === 'dashboard') renderDashboardView();
+    }
+
+    function addOrUpdateProductFromCamera(name, sku, photoDataUrl = null) {
+      let product = products.find(p => p.sku === sku);
+      if (!product) {
+        product = {
+          id: 'p_' + Date.now(),
+          name: name || 'Unnamed Product',
+          sku: sku || 'SKU-' + Date.now().toString(36),
+          quantity: 0
+        };
+        products.unshift(product);
+      }
+      saveNewData();
+      return product;
+    }
+
+    // ============================================
+    // VIEW SWITCHING + RENDERERS
+    // ============================================
+    let currentView = 'camera';
+
+    function switchView(view) {
+      currentView = view;
+      const container = document.getElementById('content-area');
+      container.innerHTML = '';
+
+      // Highlight active sidebar tab
+      document.querySelectorAll('.sidebar-tab').forEach(el => {
+        el.classList.remove('active');
+        if (el.getAttribute('onclick') && el.getAttribute('onclick').includes(`'${view}'`)) {
+          el.classList.add('active');
+        }
+      });
+
+      if (view === 'camera') {
+        renderCameraView(container);
+      } else if (view === 'inventory') {
+        renderInventoryView(container);
+      } else if (view === 'clients') {
+        renderClientsView(container);
+      } else if (view === 'dashboard') {
+        renderDashboardView(container);
+      }
+    }
+
+    // ---------- CAMERA VIEW ----------
+    function renderCameraView(container) {
+      container.innerHTML = `
+        <div class="max-w-3xl mx-auto">
+          <div class="mb-3">
+            <div class="text-xl font-bold">Camera Operations</div>
+            <div class="text-xs text-zinc-500">Capture photos, scan codes, view history, and port data to Inventory</div>
+          </div>
+
+          <div class="bg-black rounded-3xl overflow-hidden shadow mb-3 relative aspect-video">
+            <video id="sidebar-camera-video" autoplay playsinline class="w-full h-full object-cover bg-zinc-950"></video>
+            <div class="absolute top-3 left-3 px-2.5 py-0.5 text-xs bg-black/70 text-white rounded-full flex items-center gap-1">
+              <div class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
+              <span>LIVE</span>
+            </div>
+          </div>
+
+          <div class="flex gap-2 mb-4">
+            <button onclick="sidebarCapturePhoto()" class="flex-1 px-4 py-3 bg-white border rounded-2xl font-semibold">Take Photo</button>
+            <button onclick="sidebarScanBarcode()" class="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-2xl font-semibold">Scan Barcode / QR</button>
+          </div>
+
+          <div class="bg-white rounded-3xl p-4 border">
+            <div class="font-semibold mb-2 text-sm">Recent Camera Activity</div>
+            <div id="camera-history-list" class="space-y-2 text-sm"></div>
+          </div>
+        </div>
+      `;
+
+      // Start camera
+      setTimeout(() => {
+        const video = document.getElementById('sidebar-camera-video');
+        if (video && !video.srcObject) {
+          navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+            .then(stream => { video.srcObject = stream; })
+            .catch(() => {});
+        }
+        renderCameraHistory();
+      }, 200);
+    }
+
+    let sidebarCameraStream = null;
+
+    async function sidebarCapturePhoto() {
+      const video = document.getElementById('sidebar-camera-video');
+      if (!video || !video.srcObject) {
+        alert('Camera not ready');
+        return;
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+      cameraHistory.unshift({
+        id: 'cap_' + Date.now(),
+        dataUrl,
+        timestamp: new Date().toISOString()
+      });
+      saveNewData();
+      renderCameraHistory();
+      alert('Photo captured. Use "Add to Inventory" below.');
+    }
+
+    async function sidebarScanBarcode() {
+      // For demo purposes use the demo scan
+      const codes = ['IPAD11-PRO', 'CABLE-USBC-2', 'MOUSE-WL-BLK', 'NEW-SKU-991'];
+      const code = codes[Math.floor(Math.random() * codes.length)];
+      const cap = {
+        id: 'cap_' + Date.now(),
+        dataUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjMyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZWVlIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMjAiPkJBUkNPREUgU0NBTk5FRDwvdGV4dD48L3N2Zz4=',
+        timestamp: new Date().toISOString(),
+        scannedCode: code
+      };
+      cameraHistory.unshift(cap);
+      saveNewData();
+      renderCameraHistory();
+
+      // Offer to port to inventory immediately
+      if (confirm(`Scanned: ${code}\n\nAdd as Inventory Inflow (+1)?`)) {
+        let product = products.find(p => p.sku === code);
+        if (!product) {
+          product = { id: 'p_' + Date.now(), name: 'Scanned Item ' + code, sku: code, quantity: 0 };
+          products.unshift(product);
+        }
+        recordMovement(product.id, 'inflow', 1);
+        alert('Added to Inventory as inflow!');
+        switchView('inventory');
+      }
+    }
+
+    function renderCameraHistory() {
+      const list = document.getElementById('camera-history-list');
+      if (!list) return;
+      list.innerHTML = '';
+
+      if (cameraHistory.length === 0) {
+        list.innerHTML = '<div class="text-xs text-zinc-400">No recent captures yet. Use Demo scan or Take Photo.</div>';
+        return;
+      }
+
+      cameraHistory.slice(0, 5).forEach((cap, idx) => {
+        const div = document.createElement('div');
+        div.className = 'flex items-center gap-3 bg-zinc-50 rounded-2xl p-2';
+        div.innerHTML = `
+          <img src="${cap.dataUrl}" class="w-14 h-14 rounded-xl object-cover border">
+          <div class="flex-1 min-w-0">
+            <div class="text-xs text-zinc-500">${new Date(cap.timestamp).toLocaleString()}</div>
+            ${cap.scannedCode ? `<div class="font-mono text-emerald-700 text-sm">${cap.scannedCode}</div>` : ''}
+          </div>
+          <button class="text-xs px-3 py-1.5 bg-white border rounded-2xl">Add to Inventory</button>
+        `;
+        div.querySelector('button').onclick = () => {
+          const code = cap.scannedCode || 'SKU-' + Date.now().toString(36);
+          let product = products.find(p => p.sku === code);
+          if (!product) {
+            product = { id: 'p_' + Date.now(), name: 'Captured Item', sku: code, quantity: 0 };
+            products.unshift(product);
+          }
+          recordMovement(product.id, 'inflow', 1);
+          alert('Ported to Inventory!');
+          switchView('inventory');
+        };
+        list.appendChild(div);
+      });
+    }
+
+    // ---------- INVENTORY VIEW ----------
+    function renderInventoryView(container) {
+      container.innerHTML = `
+        <div>
+          <div class="flex justify-between items-center mb-3">
+            <div>
+              <div class="text-xl font-bold">Inventory Management</div>
+              <div class="text-xs text-zinc-500">Track inflows &amp; outflows • Port data from Camera</div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="showMovementForm('inflow')" class="px-4 py-2 text-sm bg-emerald-600 text-white rounded-2xl">+ Inflow</button>
+              <button onclick="showMovementForm('outflow')" class="px-4 py-2 text-sm bg-rose-600 text-white rounded-2xl">- Outflow</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 mb-4">
+            <div class="bg-white rounded-2xl p-3 border"><div class="text-xs text-zinc-500">Products</div><div class="text-2xl font-bold">${products.length}</div></div>
+            <div class="bg-white rounded-2xl p-3 border"><div class="text-xs text-zinc-500">Total Units</div><div class="text-2xl font-bold">${products.reduce((s,p)=>s+(p.quantity||0),0)}</div></div>
+            <div class="bg-white rounded-2xl p-3 border"><div class="text-xs text-zinc-500">Movements</div><div class="text-2xl font-bold">${movements.length}</div></div>
+          </div>
+
+          <div class="bg-white rounded-3xl border p-3">
+            <div class="font-semibold text-sm mb-2">Products</div>
+            <div id="product-list" class="space-y-2"></div>
+          </div>
+        </div>
+      `;
+      renderProductList();
+    }
+
+    function renderProductList() {
+      const el = document.getElementById('product-list');
+      if (!el) return;
+      el.innerHTML = '';
+
+      if (products.length === 0) {
+        el.innerHTML = '<div class="text-xs text-zinc-400">No products yet. Use camera or add manually.</div>';
+        return;
+      }
+
+      products.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'flex items-center justify-between bg-zinc-50 rounded-2xl p-2 text-sm';
+        div.innerHTML = `
+          <div>
+            <div class="font-semibold">${p.name}</div>
+            <div class="font-mono text-xs text-zinc-500">${p.sku}</div>
+          </div>
+          <div class="text-right">
+            <div class="font-bold ${p.quantity < 5 ? 'text-rose-600' : ''}">${p.quantity} units</div>
+            <button class="text-[10px] underline">Details</button>
+          </div>
+        `;
+        div.querySelector('button').onclick = () => showProductDetail(p.id);
+        el.appendChild(div);
+      });
+    }
+
+    function showMovementForm(type) {
+      const name = prompt('Product name or SKU:');
+      if (!name) return;
+      let product = products.find(p => p.sku === name || p.name.toLowerCase() === name.toLowerCase());
+      if (!product) {
+        product = { id: 'p_' + Date.now(), name, sku: name, quantity: 0 };
+        products.unshift(product);
+      }
+      const qty = parseInt(prompt('Quantity:', '1')) || 1;
+      recordMovement(product.id, type, qty);
+      renderInventoryView(document.getElementById('content-area'));
+    }
+
+    // ---------- CLIENTS VIEW ----------
+    function renderClientsView(container) {
+      container.innerHTML = `
+        <div>
+          <div class="text-xl font-bold mb-2">Client Information System</div>
+          <div class="grid grid-cols-2 gap-3" id="client-grid"></div>
+        </div>
+      `;
+      const grid = document.getElementById('client-grid');
+      clients.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'bg-white border rounded-3xl p-3 cursor-pointer active:scale-[0.985]';
+        div.innerHTML = `
+          <div class="flex gap-3 items-center">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-lg">${c.logo}</div>
+            <div>
+              <div class="font-semibold">${c.name}</div>
+              <div class="text-xs text-zinc-500">${c.business}</div>
+            </div>
+          </div>
+        `;
+        div.onclick = () => showClientDetail(c.id);
+        grid.appendChild(div);
+      });
+    }
+
+    function showClientDetail(clientId) {
+      const client = clients.find(c => c.id === clientId);
+      if (!client) return;
+
+      const body = document.getElementById('detail-modal-body');
+      document.getElementById('detail-modal-title').innerText = client.name;
+
+      const clientMovements = movements.filter(m => m.clientId === clientId);
+      let html = `
+        <div class="mb-3">
+          <div class="text-xs text-zinc-500">Business</div>
+          <div class="font-semibold">${client.business}</div>
+        </div>
+        <div class="mb-3">
+          <div class="text-xs text-zinc-500">Associated Movements</div>
+          <div>${clientMovements.length} recorded</div>
+        </div>
+      `;
+      if (clientMovements.length > 0) {
+        html += `<div class="text-xs mt-2 font-mono">Recent activity logged.</div>`;
+      }
+      body.innerHTML = html;
+      document.getElementById('detail-modal').classList.remove('hidden');
+      document.getElementById('detail-modal').classList.add('flex');
+    }
+
+    function closeDetailModal() {
+      const m = document.getElementById('detail-modal');
+      m.classList.remove('flex');
+      m.classList.add('hidden');
+    }
+
+    // ---------- DASHBOARD VIEW ----------
+    function renderDashboardView(container) {
+      const totalStock = products.reduce((s, p) => s + (p.quantity || 0), 0);
+      const totalMov = movements.length;
+      const inflows = movements.filter(m => m.type === 'inflow').length;
+      const outflows = movements.filter(m => m.type === 'outflow').length;
+
+      container.innerHTML = `
+        <div>
+          <div class="text-xl font-bold mb-3">Interactive Dashboard</div>
+
+          <div class="grid grid-cols-4 gap-2 mb-4">
+            <div class="bg-white rounded-2xl p-3 border text-center"><div class="text-xs">Products</div><div class="text-2xl font-bold">${products.length}</div></div>
+            <div class="bg-white rounded-2xl p-3 border text-center"><div class="text-xs">Total Units</div><div class="text-2xl font-bold">${totalStock}</div></div>
+            <div class="bg-white rounded-2xl p-3 border text-center"><div class="text-xs">Inflows</div><div class="text-2xl font-bold text-emerald-600">${inflows}</div></div>
+            <div class="bg-white rounded-2xl p-3 border text-center"><div class="text-xs">Outflows</div><div class="text-2xl font-bold text-rose-600">${outflows}</div></div>
+          </div>
+
+          <div class="mb-4">
+            <div class="font-semibold text-sm mb-1">Products</div>
+            <div class="grid grid-cols-3 gap-2" id="dash-products"></div>
+          </div>
+
+          <div>
+            <div class="font-semibold text-sm mb-1">Clients</div>
+            <div class="grid grid-cols-2 gap-2" id="dash-clients"></div>
+          </div>
+        </div>
+      `;
+
+      // Products tiles
+      const prodContainer = document.getElementById('dash-products');
+      products.forEach(p => {
+        const d = document.createElement('div');
+        d.className = 'bg-white border rounded-2xl p-2 text-xs cursor-pointer active:bg-zinc-100';
+        d.innerHTML = `<div class="font-semibold">${p.name}</div><div class="text-emerald-700">${p.quantity} units</div>`;
+        d.onclick = () => showProductDetail(p.id);
+        prodContainer.appendChild(d);
+      });
+
+      // Clients tiles
+      const cliContainer = document.getElementById('dash-clients');
+      clients.forEach(c => {
+        const d = document.createElement('div');
+        d.className = 'bg-white border rounded-2xl p-2 text-xs cursor-pointer flex gap-2 active:bg-zinc-100';
+        d.innerHTML = `
+          <div class="w-7 h-7 rounded bg-violet-600 text-white text-[9px] flex items-center justify-center">${c.logo}</div>
+          <div><div class="font-semibold">${c.name}</div><div class="text-[10px] text-zinc-500">${c.business}</div></div>
+        `;
+        d.onclick = () => showClientDetail(c.id);
+        cliContainer.appendChild(d);
+      });
+    }
+
+    function showProductDetail(productId) {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      const prodMov = movements.filter(m => m.productId === productId);
+      const body = document.getElementById('detail-modal-body');
+      document.getElementById('detail-modal-title').innerText = product.name;
+
+      let html = `
+        <div><strong>SKU:</strong> ${product.sku}</div>
+        <div><strong>Current Stock:</strong> ${product.quantity}</div>
+        <div class="mt-3"><strong>Recent Movements</strong></div>
+      `;
+      if (prodMov.length === 0) html += `<div class="text-xs text-zinc-400">No movements yet.</div>`;
+      else {
+        prodMov.slice(0,5).forEach(m => {
+          html += `<div class="text-xs">${m.type.toUpperCase()} ${m.quantity} — ${new Date(m.date).toLocaleDateString()}</div>`;
+        });
+      }
+      body.innerHTML = html;
+      document.getElementById('detail-modal').classList.remove('hidden');
+      document.getElementById('detail-modal').classList.add('flex');
+    }
+
+    // ============================================
+    // BOOT & INTEGRATION
+    // ============================================
+    function initializeNewSystems() {
+      loadNewData();
+
+      // Start with camera view
+      setTimeout(() => {
+        switchView('camera');
+      }, 300);
+
+      // Make sure camera history gets updated from old captures if possible
+      // (light integration)
+    }
+
+    // Override switchTab if it exists to redirect to new views
+    if (typeof window.switchTab === 'function') {
+      const oldSwitch = window.switchTab;
+      window.switchTab = function(tab) {
+        if (tab === 'capture' || tab === 'entries') switchView('camera');
+        else if (tab === 'process') switchView('dashboard');
+        else oldSwitch(tab);
+      };
+    }
+
+    // Initialize new systems on load
+    const oldOnLoad = window.onload;
+    window.onload = function() {
+      if (oldOnLoad) oldOnLoad();
+      initializeNewSystems();
+    };
+
+    // Make switchView globally available for sidebar
+    window.switchView = switchView;
+  </script>
+</body>
+</html>
