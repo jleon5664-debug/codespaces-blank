@@ -43,7 +43,7 @@ Node *insert_sorted(Node *head, int data)
     return head;
 }
 
-//test code
+//test run
 void print_list(Node *head) {
     while (head != 0) {
         printf("%i -> \n", head->data);
