@@ -84,7 +84,60 @@ void playlist_print(const Playlist *pl) {
 
 int playlist_load(Playlist *pl, const char *path) {
     if (pl == NULL || path == NULL) return -1;
+
+
+    FILE *fp = fopen(path, "r");
+    if (fp == NULL) {
+        // file dne
+        return 0;
+    }
+
+    char line [256];
+    while (fgets(line, sizeof(line), fp) != NULL) {
+        //remove \n
+        line[strcspn(line, "\n")] = '\0';
+
+        // skip blank lines
+        if (strlen(line) == 0) 
+        continue;
+        
+        // parse |
+        char *title = strtok(line, "|");
+        char *artist = strtok(NULL, "|");
+        char *dur_str = strtok(NULL, "|");
+
+        if (title == NULL || artist == NULL || dur_str == NULL) 
+        continue;
+
+        int duration = atoi(dur_str);
+
+        // reuse append
+        playlist_append(pl, title, artist, duration);
+    }
+    fclose(fp);
+    return 0;
 }
+
+int playlist_save(const Playlist *pl, const char *path) {
+    if (pl == NULL || path == NULL)
+    return -1;
+
+    FILE *fp = fopen(path, "w");
+    if (fp == NULL) {
+        perror("Error opening file for writing");
+        return -1;
+    }
+
+    Song *cur = pl->head;
+    while (cur != NULL) {
+        fprintf(fp, "%s|%s|%i\n", cur->title, cur->artist, cur->duration_sec);
+
+        cur = cur->next;
+    }
+    fclose(fp);
+    return 0;
+}
+
 
 
 // p free
