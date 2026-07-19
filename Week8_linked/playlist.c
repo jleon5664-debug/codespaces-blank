@@ -138,16 +138,120 @@ int playlist_save(const Playlist *pl, const char *path) {
     return 0;
 }
 
+int playlist_prepend(Playlist *pl, const char *title, const char *artist, int duration_sec) {
+    // guardrail
+    if (pl == NULL || title == NULL || artist == NULL) {
+        return -1;
+    }
+
+    // new node
+    Song *node = malloc(sizeof(Song));
+    if (node == NULL) {
+        fprintf(stderr, "Out of memory\n");
+        return -1;
+    }
+
+    // fill node w data
+    strncpy(node->title, title, 63);
+    node->title[63] = '\0';
+    strncpy(node->artist, artist, 63);
+    node->artist[63] = '\0';
+    node->duration_sec = duration_sec;
+
+    // link to front node
+    node->prev = NULL;
+    // points to old head
+    node->next = pl->head;
+
+    // update list structure
+    if (pl->head == NULL) {
+    // empty list to head/tail
+        pl->head = node;
+        pl->tail = node;
+    } else {
+        // move old songs 
+        pl->head->prev = node;
+        pl->head = node;
+    }
+
+    //increment / update
+    pl->count++;
+
+    return 0;
+}
+
+int playlist_insert_after(Playlist *pl, const char *after_title, const char *title, const char *artist, int duration_sec) {
+    // title guardrail
+    if (pl == NULL || after_title == NULL || title == NULL || artist == NULL) {
+        return -1;
+    }
+
+    // locate target node
+    Song *cur = pl->head;
+    while (cur != NULL) {
+        if (strcmp(cur->title, after_title) == 0) {
+            // node found
+            break;
+        }
+        cur = cur->next;
+    }
+
+    // not found, return
+    if (cur == NULL) {
+        return -1;
+    }
+
+    // memory allocate & new node
+    Song *node = malloc(sizeof(Song));
+    if (node == NULL) {
+        fprintf(stderr, "Out of memory\n");
+        return -1;
+    }
+
+    // fill node w data
+    strncpy(node->title, title, 63);
+    node->title[63] = '\0';
+    strncpy(node->artist, artist, 63);
+    node->artist[63] = '\0';
+    node->duration_sec = duration_sec;
+
+    // link node to list
+    node->prev = cur;
+    node->next = cur->next;
+
+    if (cur->next != NULL) {
+        // node after cur, update prev pointer
+        cur->next->prev = node;
+    }
+
+    cur->next = node;
+
+    // increment, update count
+    pl->count++;
+
+    return 0;
+}
+
+int playlist_remove(Playlist *pl, const char *title) {
+    // guardrail for NULL 
+    if (pl == NULL || title == NULL) {
+        return -1;
+    }
+
+    // traverse to locate target node
+    Song *cur = pl->head;
+    while (cur != NULL) {
+        if (strcmp(cur->title, title) == 0) {
+            // node found
+            break;
+        }
+        cur = cur->next;
+    }
+}
 
 
-// p free
-// p load
 
-
-// p save
-// p prepend
 // p remove
-// p insert after
 // p move up
 // p print rev
 // p total duration
