@@ -3,7 +3,7 @@
 #include <string.h>
 #include "playlist.h"
 
-// code logic
+// create empty list
 void playlist_init(Playlist *pl) {
     if (pl == NULL) return;
     pl->head = NULL;
@@ -26,16 +26,18 @@ void playlist_free(Playlist *pl) {
 }
 
 int playlist_append(Playlist *pl, const char *title, const char *artist, int duration_sec) {
+    // guardrails
     if (pl == NULL || title == NULL || artist == NULL) {
         return -1;
     }
+    // alloc song mem
     Song *node = malloc(sizeof(Song));
     if (node == NULL) {
         fprintf(stderr, "Out of memory\n");
         return -1;
     }
 
-    // copy string
+    // copy strings
     strncpy(node->title, title, 63);
     node->title[63] = '\0';
     strncpy(node->artist, artist, 63);
@@ -60,6 +62,7 @@ int playlist_append(Playlist *pl, const char *title, const char *artist, int dur
 }
 
 void playlist_print(const Playlist *pl) {
+    // guardrail
     if (pl == NULL) {
         printf("= Playlist (0 songs) =\n");
         // guardrail for empty or invalid 
@@ -83,6 +86,7 @@ void playlist_print(const Playlist *pl) {
 }
 
 int playlist_load(Playlist *pl, const char *path) {
+    //guardrails
     if (pl == NULL || path == NULL) return -1;
 
 
@@ -119,6 +123,7 @@ int playlist_load(Playlist *pl, const char *path) {
 }
 
 int playlist_save(const Playlist *pl, const char *path) {
+    // guardrail
     if (pl == NULL || path == NULL)
     return -1;
 
@@ -247,11 +252,132 @@ int playlist_remove(Playlist *pl, const char *title) {
         }
         cur = cur->next;
     }
+
+    // node not found 
+    if (cur == NULL) {
+        return -1;
+    }
+
+    // update prev node
+    if (cur->prev != NULL) {
+        cur->prev->next = cur->next;
+    } else {
+        // move cur head forward
+        pl->head = cur->next;
+    }
+
+    // update next node prev pointer
+    if (cur->next != NULL) {
+        cur->next->prev = cur->prev;
+    } else {
+        // move tail backward if cur 
+        pl->tail = cur->prev;
+    }
+
+    // free node and decrement 
+    free(cur);
+    pl->count--;
+    
+    return 0;
 }
 
+int playlist_move_up(Playlist *pl, const char * title) {
+    // null guardrail
+    if (pl == NULL || title == NULL) {
+        return -1;
+    }
+    
+    // locate node to move up
+    Song *cur = pl->head;
+    while (cur != NULL) {
+        if (strcmp(cur->title, title) == 0) {
+            // node found
+            break;
+        }
+        cur = cur->next;
+    }
+    
+    // node not found
+    if (cur == NULL) {
+        return -1;
+    }
 
+    // exit if node is already at front
+    if (cur->prev == NULL) {
+        return 0;
+    }
 
-// p remove
-// p move up
-// p print rev
-// p total duration
+    // swap data w prev node
+    Song *prev = cur->prev;
+
+    // titles swap
+    char m_title[64];
+    strncpy(m_title, cur->title, 63);
+    m_title[63] = '\0';
+    strncpy(cur->title, prev->title, 63);
+    cur->title[63] = '\0';
+    strncpy(prev->title, m_title, 63);
+    prev->title[63] = '\0';
+
+    // swap artists
+    char t_artist[64];
+    strncpy(t_artist, cur->artist, 63);
+    t_artist[63] = '\0';
+    strncpy(cur->artist, prev->artist, 63);
+    cur->artist[63] = '\0';
+    strncpy(prev->artist, t_artist, 63);
+    prev->artist[63] = '\0';
+
+    // duration swaps 
+    int s_dur = cur->duration_sec;
+    cur->duration_sec = prev->duration_sec;
+    prev->duration_sec = s_dur;
+
+    return 0;
+}
+
+void playlist_print_reverse(const Playlist *pl) {
+    // guardrails
+    if (pl == NULL) {
+        return;
+    }
+
+    // print header
+    printf("= Playlist (%i songs) =\n", pl->count);
+
+    // begin from tail then walk back
+    Song *cur = pl->tail;
+    int index = 1;
+
+    // loop backwards
+    while (cur != NULL) {
+        int minutes = cur->duration_sec / 60;
+        int seconds = cur->duration_sec % 60;
+
+        printf("%i. %s - %s [%i:%02i]\n", index, cur->title, cur->artist, minutes, seconds);
+
+    // move backwards 
+    cur = cur->prev;
+    index++;
+    }
+}
+
+int playlist_total_duration(const Playlist *pl) {
+    // duration check
+    if (pl == NULL || pl->head == NULL) {
+        return 0;
+    }
+
+    // walk list
+    int duration = 0;
+    Song *cur = pl->head;
+
+    // accumulation total loop
+    while (cur != NULL) {
+        duration += cur->duration_sec;
+        cur = cur->next;
+    }
+
+    // return total
+    return duration; 
+}

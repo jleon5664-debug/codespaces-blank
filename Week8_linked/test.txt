@@ -1,4 +1,6 @@
-Bohemian Rhapsody|Queen|354
+Dark Side|Pink Floyd|163
 Hotel California|Eagles|391
-Stairway to Heaven|Led Zeppelin|482
+Money|Pink Floyd|382
 Come Together|Beatles|259
+Stairway to Heaven|Led Zeppelin|482
+Dark Side|Pink Floyd|163
