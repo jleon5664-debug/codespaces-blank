@@ -1,0 +1,1 @@
+// struct, constant, function prototypes
