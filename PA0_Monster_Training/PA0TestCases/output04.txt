@@ -1,0 +1,49 @@
+=== MONSTER TEAM ===
+Monster 0:
+Name: Bulbasaur
+Type: Grass
+Level: 10
+HP: 70
+Attack: 50
+Defense: 47
+
+Monster 1:
+Name: Charmander
+Type: Fire
+Level: 10
+HP: 70
+Attack: 55
+Defense: 50
+
+Monster 2:
+Name: Squirtle
+Type: Water
+Level: 10
+HP: 70
+Attack: 54
+Defense: 50
+
+Monster 3:
+Name: Pidgey
+Type: Flying
+Level: 10
+HP: 70
+Attack: 54
+Defense: 49
+
+=== TRAINING ===
+Training Monster 0...
+Name: Bulbasaur
+Type: Grass
+Level: 11
+HP: 72
+Attack: 55
+Defense: 50
+
+=== STRONGEST MONSTER ===
+Name: Bulbasaur
+Type: Grass
+Level: 11
+HP: 72
+Attack: 55
+Defense: 50

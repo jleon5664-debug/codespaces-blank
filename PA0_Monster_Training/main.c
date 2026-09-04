@@ -2,24 +2,25 @@
 #include <stdio.h>
 #include "main.h"
 
-// forward
-void printMonsterFields(Monster *m);
+// forward declaration of attribute parameters
+static void printMonsterFields(Monster *m);
 
 int main(void) {
+    // 100 slots reserved on stack
     Monster monsters[MAX_MONSTERS];
     int count = 0;
     int train_index = 0;
 
-// input all monsters data
+// intake monster data
     readAllMonsters(monsters, &count);
 
-// input zero training index from final line
+// read input data and pass 
     scanf("%i", &train_index);
 
 // print initial monster data
     printAllMonster(monsters, count);
 
-// change target monster
+// evaluate & pass address of monsters[]
     trainMonster(&monsters[train_index]);
 
 // training report
@@ -37,12 +38,13 @@ int main(void) {
     return 0;
 }
 
-// readallM
+// reads header integer
 void readAllMonsters(Monster monsters[], int *count) {
     int n;
     scanf("%i", &n);
+    // updates count
     *count = n;
-
+    // pass strings & int address
     for (int i = 0; i < n; i++) {
         scanf("%s %s %i %i %i %i",
             monsters[i].name,
@@ -53,8 +55,8 @@ void readAllMonsters(Monster monsters[], int *count) {
         &monsters[i].defense);
     }
 }
-// display monster attributes
-void printMonsterFields(Monster *m) {
+// display monster attributes & static for internal linkage 
+static void printMonsterFields(Monster *m) {
     printf("Name: %s\n", m->name);
     printf("Type: %s\n", m->type);
     printf("Level: %i\n", m->level);
@@ -65,13 +67,15 @@ void printMonsterFields(Monster *m) {
 // print monster
 void printAllMonster(Monster *monsters, int count) {
         printf("=== MONSTER TEAM ===\n");
+        // track count, avoid print of unintialized memory 
         for (int i = 0; i < count; i++) {
             printf("Monster %i:\n", i);
             printMonsterFields(&monsters[i]);
+            // separate blocks \n 
             printf("\n");
         }
     }
-// train
+// mutate stack slot of monster w train data 
 void trainMonster(Monster *monster) {
     int position = monster->name[0] - 'A' + 1;
     monster->level += 1;
@@ -86,6 +90,7 @@ int findStrongest(Monster monsters[], int count) {
 
     for (int i = 1; i < count; i++) {
         int score = monsters[i].level + monsters[i].attack + monsters[i].defense;
+        // tie-breaker
         if (score > bestScore) {
             bestScore = score;
             bestIndex = i;

@@ -1,0 +1,49 @@
+=== MONSTER TEAM ===
+Monster 0:
+Name: Abra
+Type: Psychic
+Level: 8
+HP: 55
+Attack: 40
+Defense: 30
+
+Monster 1:
+Name: Machop
+Type: Fighting
+Level: 12
+HP: 80
+Attack: 60
+Defense: 50
+
+Monster 2:
+Name: Eevee
+Type: Normal
+Level: 10
+HP: 70
+Attack: 45
+Defense: 40
+
+Monster 3:
+Name: Raichu
+Type: Electric
+Level: 18
+HP: 110
+Attack: 85
+Defense: 70
+
+=== TRAINING ===
+Training Monster 3...
+Name: Raichu
+Type: Electric
+Level: 19
+HP: 128
+Attack: 90
+Defense: 73
+
+=== STRONGEST MONSTER ===
+Name: Raichu
+Type: Electric
+Level: 19
+HP: 128
+Attack: 90
+Defense: 73

@@ -1,0 +1,6 @@
+4
+Abra Psychic 8 55 40 30
+Machop Fighting 12 80 60 50
+Eevee Normal 10 70 45 40
+Raichu Electric 18 110 85 70
+3

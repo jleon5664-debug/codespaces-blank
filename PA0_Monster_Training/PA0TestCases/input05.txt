@@ -1,0 +1,7 @@
+5
+Dragonite Dragon 20 150 100 95
+Pidgey Flying 5 40 30 25
+Rattata Normal 6 45 35 25
+Caterpie Bug 4 35 25 20
+Magikarp Water 3 30 10 15
+4

@@ -1,0 +1,6 @@
+4
+Abra Psychic 10 60 50 40
+Gastly Ghost 10 70 45 45
+Pikachu Electric 8 65 50 35
+Meowth Normal 9 60 45 40
+1

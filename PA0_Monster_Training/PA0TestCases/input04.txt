@@ -1,0 +1,6 @@
+4
+Bulbasaur Grass 10 70 50 47
+Charmander Fire 10 70 55 50
+Squirtle Water 10 70 54 50
+Pidgey Flying 10 70 54 49
+0

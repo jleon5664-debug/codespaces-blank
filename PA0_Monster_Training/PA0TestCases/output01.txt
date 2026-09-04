@@ -1,0 +1,41 @@
+=== MONSTER TEAM ===
+Monster 0:
+Name: Pikachu
+Type: Electric
+Level: 12
+HP: 85
+Attack: 55
+Defense: 40
+
+Monster 1:
+Name: Charizard
+Type: Fire
+Level: 15
+HP: 120
+Attack: 78
+Defense: 65
+
+Monster 2:
+Name: Bulbasaur
+Type: Grass
+Level: 10
+HP: 75
+Attack: 49
+Defense: 49
+
+=== TRAINING ===
+Training Monster 0...
+Name: Pikachu
+Type: Electric
+Level: 13
+HP: 101
+Attack: 60
+Defense: 43
+
+=== STRONGEST MONSTER ===
+Name: Charizard
+Type: Fire
+Level: 15
+HP: 120
+Attack: 78
+Defense: 65

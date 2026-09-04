@@ -1,0 +1,57 @@
+=== MONSTER TEAM ===
+Monster 0:
+Name: Dragonite
+Type: Dragon
+Level: 20
+HP: 150
+Attack: 100
+Defense: 95
+
+Monster 1:
+Name: Pidgey
+Type: Flying
+Level: 5
+HP: 40
+Attack: 30
+Defense: 25
+
+Monster 2:
+Name: Rattata
+Type: Normal
+Level: 6
+HP: 45
+Attack: 35
+Defense: 25
+
+Monster 3:
+Name: Caterpie
+Type: Bug
+Level: 4
+HP: 35
+Attack: 25
+Defense: 20
+
+Monster 4:
+Name: Magikarp
+Type: Water
+Level: 3
+HP: 30
+Attack: 10
+Defense: 15
+
+=== TRAINING ===
+Training Monster 4...
+Name: Magikarp
+Type: Water
+Level: 4
+HP: 43
+Attack: 15
+Defense: 18
+
+=== STRONGEST MONSTER ===
+Name: Dragonite
+Type: Dragon
+Level: 20
+HP: 150
+Attack: 100
+Defense: 95

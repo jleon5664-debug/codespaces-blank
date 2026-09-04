@@ -1,0 +1,49 @@
+=== MONSTER TEAM ===
+Monster 0:
+Name: Abra
+Type: Psychic
+Level: 10
+HP: 60
+Attack: 50
+Defense: 40
+
+Monster 1:
+Name: Gastly
+Type: Ghost
+Level: 10
+HP: 70
+Attack: 45
+Defense: 45
+
+Monster 2:
+Name: Pikachu
+Type: Electric
+Level: 8
+HP: 65
+Attack: 50
+Defense: 35
+
+Monster 3:
+Name: Meowth
+Type: Normal
+Level: 9
+HP: 60
+Attack: 45
+Defense: 40
+
+=== TRAINING ===
+Training Monster 1...
+Name: Gastly
+Type: Ghost
+Level: 11
+HP: 77
+Attack: 50
+Defense: 48
+
+=== STRONGEST MONSTER ===
+Name: Gastly
+Type: Ghost
+Level: 11
+HP: 77
+Attack: 50
+Defense: 48

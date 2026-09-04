@@ -1,0 +1,25 @@
+=== MONSTER TEAM ===
+Monster 0:
+Name: Zubat
+Type: Poison
+Level: 7
+HP: 50
+Attack: 45
+Defense: 35
+
+=== TRAINING ===
+Training Monster 0...
+Name: Zubat
+Type: Poison
+Level: 8
+HP: 76
+Attack: 50
+Defense: 38
+
+=== STRONGEST MONSTER ===
+Name: Zubat
+Type: Poison
+Level: 8
+HP: 76
+Attack: 50
+Defense: 38
