@@ -6,10 +6,13 @@
 #include <string.h>
 
 // constraints, +1 for \0
-#define MAX_STR_LEN 51  
+#define MAX_STR_LEN 50  
+#define STR(x) #x
+#define XSTR(x) STR(x)
 #define MAX_POPULATION 1000000
+
 // data structures
-    typedef struct monster
+typedef struct monster
     {
         char *name;
         char *element;
@@ -17,7 +20,7 @@
 
     } monster;
 
-    typedef struct region
+typedef struct region
     {
         char *name;
         int monster_cnt;
@@ -25,14 +28,14 @@
         monster **monsters;
     } region;
 
-    typedef struct itinerary
+typedef struct itinerary
     {
         int region_cnt;
         region **regions;
         int captures;
     } itinerary;
 
-    typedef struct trainer
+typedef struct trainer
     {
         char *name;
         itinerary *visits;
@@ -86,20 +89,20 @@ int main(void) {
 
 char* readAndAllocateString(void) {
     // declare char limit
-    char name[MAX_STR_LEN];
+    char name[MAX_STR_LEN + 1];
 
     // read string inputs into name
-    scanf("%50s", name);
+    scanf("%50s" , name);
 
     // measure string length +1 for \0
     int length = strlen(name) + 1;
     
     // DMA on the heap
-    char* length = (char*)malloc(length * sizeof(char));
+    char *str = malloc(length * sizeof(char));
 
     // copy string from stack into heap mem
-    strcpy(length, name);
+    strcpy(str, name);
 
     // return p
-    return length;
+    return str;
 }
