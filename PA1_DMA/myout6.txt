@@ -1,0 +1,17 @@
+Gary
+Volcano
+5-Growlithe
+1-Ponyta
+4-Magmar
+Desert
+9-Growlithe
+2-Ponyta
+
+May
+Desert
+5-Growlithe
+1-Ponyta
+Volcano
+3-Growlithe
+1-Ponyta
+2-Magmar
