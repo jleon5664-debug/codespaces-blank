@@ -1,0 +1,34 @@
+3
+
+Pikachu
+Electric 8
+
+Eevee
+Normal 12
+
+Oddish
+Grass 5
+
+2
+
+Meadow
+2
+Pikachu
+Eevee
+
+Cave
+2
+Eevee
+Oddish
+
+2
+
+Red
+5
+1
+Meadow
+
+Blue
+7
+1
+Cave

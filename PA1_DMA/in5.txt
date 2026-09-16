@@ -1,0 +1,59 @@
+6
+
+Bulbasaur
+Grass 10
+
+Pikachu
+Electric 20
+
+Charmander
+Fire 30
+
+Squirtle
+Water 40
+
+Eevee
+Normal 50
+
+Snorlax
+Normal 60
+
+3
+
+Alpha
+3
+Bulbasaur
+Pikachu
+Eevee
+
+Beta
+3
+Charmander
+Squirtle
+Snorlax
+
+Gamma
+4
+Pikachu
+Charmander
+Eevee
+Snorlax
+
+3
+
+Ash
+9
+2
+Gamma
+Alpha
+
+Misty
+12
+2
+Beta
+Gamma
+
+Brock
+1
+1
+Alpha

@@ -1,0 +1,45 @@
+5
+
+Growlithe
+Fire 50
+
+Vulpix
+Fire 1
+
+Ponyta
+Fire 9
+
+Magmar
+Fire 40
+
+Torchic
+Fire 2
+
+2
+
+Volcano
+5
+Growlithe
+Vulpix
+Ponyta
+Magmar
+Torchic
+
+Desert
+2
+Growlithe
+Ponyta
+
+2
+
+Gary
+11
+2
+Volcano
+Desert
+
+May
+6
+2
+Desert
+Volcano
