@@ -1,3 +1,5 @@
+/* COP 3502C PA2 
+    This program is written by: Jeronimo Leon*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

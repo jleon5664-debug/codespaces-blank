@@ -1,0 +1,7 @@
+3
+Flare Fire
+Splash Water
+Moss Grass
+2
+FIRST_ELEMENT Water
+LAST_ELEMENT Grass

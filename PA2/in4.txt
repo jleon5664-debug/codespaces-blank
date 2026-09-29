@@ -1,0 +1,26 @@
+10
+Pikachu Electric
+Charizard Fire
+Squirtle Water
+Bulbasaur Grass
+Vulpix Fire
+Psyduck Water
+Gengar Ghost
+Eevee Normal
+Mewtwo Psychic
+Lapras Water
+13
+FIRST_ELEMENT Psychic
+LAST_ELEMENT Water
+ELEMENT_BEFORE_ALL Fire Water
+NO_ADJACENT_ELEMENT Fire
+IMMEDIATELY_BEFORE 8 4
+IMMEDIATELY_BEFORE 4 3
+IMMEDIATELY_BEFORE 1 0
+POSITION 6 6
+POSITION 2 7
+POSITION 7 8
+POSITION 9 9
+POSITION 5 10
+BEFORE 3 1
+BEFORE 0 6

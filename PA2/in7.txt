@@ -1,0 +1,20 @@
+8
+Falcon Air
+Blaze Fire
+Coral Water
+Fern Grass
+Volt Electric
+Frost Ice
+Shade Ghost
+Stone Rock
+10
+FIRST_ELEMENT Ice
+LAST_ELEMENT Electric
+ELEMENT_BEFORE_ALL Fire Water
+IMMEDIATELY_BEFORE 5 3
+IMMEDIATELY_BEFORE 1 0
+POSITION 6 5
+BEFORE 0 6
+NO_ADJACENT_ELEMENT Water
+POSITION 7 6
+BEFORE 6 2

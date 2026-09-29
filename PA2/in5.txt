@@ -1,0 +1,15 @@
+6
+Pikachu Electric
+Charizard Fire
+Squirtle Water
+Bulbasaur Grass
+Vulpix Fire
+Psyduck Water
+7
+FIRST_ELEMENT Fire
+LAST_ELEMENT Water
+ELEMENT_BEFORE_ALL Fire Water
+IMMEDIATELY_BEFORE 4 3
+IMMEDIATELY_BEFORE 1 0
+BEFORE 4 1
+POSITION 2 5
