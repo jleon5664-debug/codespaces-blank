@@ -114,11 +114,11 @@ int evaluateConstraint(const int perm[], int n, const Constraint *con) {
  
 // recursively checks constraints index
 int recursiveCheckAll(const int perm[], int n, int numConstraints, int idx) {
-//every constraint passed
+    //every constraint passed
     if (idx == numConstraints) return 1;    
     
     if (!evaluateConstraint(perm, n, &constraints[idx]))
-// failed, skips rest
+    // failed, skips rest
         return 0;
  
     return recursiveCheckAll(perm, n, numConstraints, idx + 1);
@@ -132,7 +132,7 @@ void printLineup(const int perm[], int n) {
  
 
 int permute(int perm[], int used[], int k, int n, int numConstraints) {
-// complete lineup has been built
+    // complete lineup has been built
     if (k == n) {
         if (recursiveCheckAll(perm, n, numConstraints, 0)) {
             printLineup(perm, n);
@@ -141,17 +141,18 @@ int permute(int perm[], int used[], int k, int n, int numConstraints) {
         return 0;
     }
  
-// try every monster not yet placed at position k
+    // try every monster not yet placed at position k
     for (int i = 0; i < n; i++) {
         if (!used[i]) {
             used[i] = 1;       
             perm[k] = i;
  
+            // unwind if solution found
             if (permute(perm, used, k + 1, n, numConstraints))
-// solution found: unwind
+
                 return 1;
  
-// backtrack so i can be reused by other branches           
+    // backtrack so i can be reused by other branches           
             used[i] = 0;
         }
     }
@@ -178,26 +179,26 @@ void readConstraint(Constraint *con) {
     con->type = parseConstraintType(keyword);
  
     switch (con->type) {
-// two monster indices
+        // two monster indices
         case BEFORE:
         case IMMEDIATELY_BEFORE:
             scanf("%d %d", &con->monsterA, &con->monsterB);
             break;
  
-// monster index and a 1-based position
+        // monster index and a 1-based position
         case POSITION:
             scanf("%d %d", &con->monsterA, &con->position);
             con->position--;   // store 0-based so perm[position] indexes directly
             break;
  
-// one element
+        // one element
         case FIRST_ELEMENT:
         case LAST_ELEMENT:
         case NO_ADJACENT_ELEMENT:
             scanf(STR_FMT, con->elementA);
             break;
  
-// two elements
+        // two elements
         case ELEMENT_BEFORE_ALL:
             scanf(STR_FMT " " STR_FMT, con->elementA, con->elementB);
             break;
@@ -207,7 +208,7 @@ void readConstraint(Constraint *con) {
     }
 }
  
-// Reads one monster, name goes into a temporary buf
+// reads one monster, name goes into a temporary buf
 // copied into heap memory sized exactly to its len
 void readMonster(Monster *m) {
     char nameBuf[STR_BUF_SIZE];
@@ -221,14 +222,14 @@ void readMonster(Monster *m) {
     strcpy(m->name, nameBuf);
 }
  
-// frees each dynamically allocated name, index i through n-1
+// frees each dynamically allocated name
 void recursiveFreeMonsters(int i, int n) {
     if (i >= n) return;
     free(monsters[i].name);
     recursiveFreeMonsters(i + 1, n);
 }
  
-// read input, search for the lineup, free memory
+// main: read input, search for the lineup, free memory
 int main(void) {
     int numMonsters, numConstraints;
     int perm[MAX_MONSTERS]; 
