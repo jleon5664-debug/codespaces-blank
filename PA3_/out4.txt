@@ -1,0 +1,17 @@
+[EVENT] Deposited to Will's PC: Onyx (Rock, Lv: 40, HP: 100)
+[EVENT] Deposited to Will's PC: Chimera (Dark, Lv: 90, HP: 200)
+[EVENT] Deposited to Will's PC: Zephyr (Flying, Lv: 15, HP: 30)
+[EVENT] Withdrew 2 monster(s) from Will's PC to Active Roster.
+[EVENT] Deposited to Will's PC: Sylph (Fairy, Lv: 60, HP: 110)
+[EVENT] Returned Onyx from Active Roster back to Will's PC.
+[EVENT] Withdrew 2 monster(s) from Will's PC to Active Roster.
+--- WILL'S PC STATUS ---
+Storage Box Queue (1): Onyx [Lv: 40]
+Active Roster (3): Chimera [Lv: 90] -> Sylph [Lv: 60] -> Zephyr [Lv: 15]
+------------------------
+[EVENT] Released 1 fainted monster(s) with HP below 50.
+--- WILL'S PC STATUS ---
+Storage Box Queue (1): Onyx [Lv: 40]
+Active Roster (2): Chimera [Lv: 90] -> Sylph [Lv: 60]
+------------------------
+[EVENT] Logged off Will's PC.

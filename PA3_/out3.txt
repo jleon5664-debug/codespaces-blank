@@ -1,0 +1,20 @@
+--- WILL'S PC STATUS ---
+Storage Box Queue (0): EMPTY
+Active Roster (0): EMPTY
+------------------------
+[EVENT] Withdrew 0 monster(s) from Will's PC to Active Roster.
+[EVENT] Released 0 fainted monster(s) with HP below 50.
+[ERROR] Lucario is not in the Active Roster.
+[EVENT] Deposited to Will's PC: Vapor (Water, Lv: 20, HP: 10)
+[EVENT] Deposited to Will's PC: Frost (Ice, Lv: 20, HP: 10)
+[EVENT] Withdrew 2 monster(s) from Will's PC to Active Roster.
+--- WILL'S PC STATUS ---
+Storage Box Queue (0): EMPTY
+Active Roster (2): Vapor [Lv: 20] -> Frost [Lv: 20]
+------------------------
+[EVENT] Released 2 fainted monster(s) with HP below 15.
+--- WILL'S PC STATUS ---
+Storage Box Queue (0): EMPTY
+Active Roster (0): EMPTY
+------------------------
+[EVENT] Logged off Will's PC.

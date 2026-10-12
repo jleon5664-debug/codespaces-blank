@@ -1,0 +1,15 @@
+[EVENT] Deposited to Will's PC: Ignis (Fire, Lv: 50, HP: 100)
+[EVENT] Deposited to Will's PC: Sparky (Electric, Lv: 50, HP: 120)
+[EVENT] Deposited to Will's PC: Terra (Ground, Lv: 50, HP: 80)
+[EVENT] Withdrew 3 monster(s) from Will's PC to Active Roster.
+--- WILL'S PC STATUS ---
+Storage Box Queue (0): EMPTY
+Active Roster (3): Sparky [Lv: 50] -> Ignis [Lv: 50] -> Terra [Lv: 50]
+------------------------
+[ERROR] Mewtwo is not in the Active Roster.
+[EVENT] Released 1 fainted monster(s) with HP below 90.
+--- WILL'S PC STATUS ---
+Storage Box Queue (0): EMPTY
+Active Roster (2): Sparky [Lv: 50] -> Ignis [Lv: 50]
+------------------------
+[EVENT] Logged off Will's PC.

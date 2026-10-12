@@ -6,6 +6,7 @@
 #include <string.h>
 
 typedef struct Monster {
+// up to 50 char plus '\0'
     char name[51];
     char element[31];
     int level;
@@ -32,6 +33,8 @@ static inline int goesBefore(const Monster* a, const Monster* b) {
     if (a->level != b->level) return a->level > b->level;
     return a->hp > b->hp;
 }
+ 
+// will's pc queue storage operation (fifo)
 
 Queue* createQueue(void) {
     Queue* q = (Queue*)malloc(sizeof(Queue));
@@ -64,6 +67,8 @@ Monster* dequeue(Queue* q) {
     q->size--;
     return m;
 }
+
+// active roster 
 
 Node* insertRosterSorted(Node* head, Monster* m) {
     if (!m) return head;
@@ -110,6 +115,8 @@ Node* releaseFainted(Node* head, int minHp, int* releasedCount) {
     }
     return head;
 }
+
+ // setup & teardown
 
 WillsPC* createWillsPC(void) {
     WillsPC* pc = (WillsPC*)malloc(sizeof(WillsPC));
