@@ -1,3 +1,6 @@
+/* COP 3502C PA3
+    this program is written by: Jeronimo Leon */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,9 +34,8 @@ typedef struct WillsPC {
     Node* activeRosterHead;
 } WillsPC;
  
-// The roster order, higher level first, equal level -> highest hp first
-// returns 1 if a belongs before b, complete tie returns 0, so a
-// newcomer is placed after existing equal monsters (arrival order is kept).
+// roster order, higher level first, equal level -> highest hp first
+// returns 1 if a belongs before b, complete tie returns 0
 static inline int goesBefore(const Monster* a, const Monster* b) {
     if (a->level != b->level) return a->level > b->level;
     return a->hp > b->hp;
@@ -102,7 +104,7 @@ Node* insertRosterSorted(Node* head, Monster* m) {
 }
  
 // moves the first Monster named monsterName from the roster to the back of q
-// returns the updated head, roster is unchanged if the name is not found
+// roster is unchanged if the name is not found
 Node* depositBackToPC(Node* head, Queue* q, const char* monsterName) {
     Node** curr = &head;
     // stops on the matching node, or NULL
@@ -118,10 +120,11 @@ Node* depositBackToPC(Node* head, Queue* q, const char* monsterName) {
      // frees roster node, not Monster
         free(doomed);
     }
+// returns the updated head
     return head;
 }
  
-// frees every roster Monster with hp < minHp and its node
+// frees every roster Monster with hp < minHp & its node
 Node* releaseFainted(Node* head, int minHp, int* releasedCount) {
     Node** curr = &head;
     while (*curr != NULL) {
@@ -159,7 +162,7 @@ WillsPC* createWillsPC(void) {
     return pc;
 }
  
-// frees remaining Monsters and Nodes, then the queue, then the PC
+// frees remaining Monsters and nodes, then the queue, then the pc
 void releaseWillsPC(WillsPC* pc) {
     Monster* m = NULL;
     // dequeue frees each Node
@@ -216,9 +219,8 @@ static void displayStorage(const WillsPC* pc) {
 int main(void) {
     WillsPC* pc = createWillsPC();
     if (!pc) return 1;
-    // longest command (RELEASE_FAINTED) is 15 chars
     char cmd[20];
-    // ends at LOGOFF_PC or at end of input
+    // end at LOGOFF_PC, or at end of input
     while (scanf("%19s", cmd) == 1) {    
         if (strcmp(cmd, "DEPOSIT_PC") == 0) {
             Monster* m = (Monster*)malloc(sizeof(Monster));
@@ -234,7 +236,7 @@ int main(void) {
             scanf("%d", &k);
             int moved = 0;
             Monster* m;
-            // moved < k is tested first, so no monster is dequeued unless it will be inserted
+            // moved < k tested first, so no monster is dequeued unless it will be inserted
             // if dequeue returns NULL, means the queue ran out early
             while (moved < k && (m = dequeue(pc->storageBox)) != NULL) {
                 pc->activeRosterHead = insertRosterSorted(pc->activeRosterHead, m);
@@ -245,7 +247,7 @@ int main(void) {
         } else if (strcmp(cmd, "DEPOSIT_BACK") == 0) {
             char name[51];
             scanf("%50s", name);
-            // depositBackToPC returns only the head, tells main nothing when match was not the head 
+            // depositBackToPC returns only the head, tells main nothing when match is not the head 
             // enqueues exactly once on success
             int prevSize = pc->storageBox->size;
             pc->activeRosterHead = depositBackToPC(pc->activeRosterHead, pc->storageBox, name);
@@ -264,6 +266,7 @@ int main(void) {
             printf("[EVENT] Released %d fainted monster(s) with HP below %d.\n", released, minHp);
         } else if (strcmp(cmd, "DISPLAY_STORAGE") == 0) {
             displayStorage(pc);
+        // end
         } else if (strcmp(cmd, "LOGOFF_PC") == 0) {
             // printed before freeing
             printf("[EVENT] Logged off Will's PC.\n");
