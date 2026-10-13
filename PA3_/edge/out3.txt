@@ -1,0 +1,17 @@
+[EVENT] Deposited to Will's PC: Snorlax (Normal, Lv: 70, HP: 4)
+[EVENT] Deposited to Will's PC: Gengar (Ghost, Lv: 62, HP: 80)
+[EVENT] Deposited to Will's PC: Golem (Rock, Lv: 62, HP: 0)
+[EVENT] Deposited to Will's PC: Pikachu (Electric, Lv: 45, HP: 0)
+[EVENT] Withdrew 4 monster(s) from Will's PC to Active Roster.
+[EVENT] Released 3 fainted monster(s) with HP below 10.
+--- WILL'S PC STATUS ---
+Storage Box Queue (0): EMPTY
+Active Roster (1): Gengar [Lv: 62]
+------------------------
+[EVENT] Released 0 fainted monster(s) with HP below 80.
+[EVENT] Released 1 fainted monster(s) with HP below 81.
+--- WILL'S PC STATUS ---
+Storage Box Queue (0): EMPTY
+Active Roster (0): EMPTY
+------------------------
+[EVENT] Logged off Will's PC.

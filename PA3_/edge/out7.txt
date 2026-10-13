@@ -1,0 +1,6 @@
+[EVENT] Deposited to Will's PC: Ditto (Normal, Lv: 30, HP: 48)
+[EVENT] Withdrew 1 monster(s) from Will's PC to Active Roster.
+--- WILL'S PC STATUS ---
+Storage Box Queue (0): EMPTY
+Active Roster (1): Ditto [Lv: 30]
+------------------------

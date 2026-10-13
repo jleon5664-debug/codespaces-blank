@@ -1,0 +1,14 @@
+==25297== Memcheck, a memory error detector
+==25297== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==25297== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
+==25297== Command: ./pa3_test
+==25297== 
+==25297== 
+==25297== HEAP SUMMARY:
+==25297==     in use at exit: 0 bytes in 0 blocks
+==25297==   total heap usage: 4 allocs, 4 frees, 8,232 bytes allocated
+==25297== 
+==25297== All heap blocks were freed -- no leaks are possible
+==25297== 
+==25297== For lists of detected and suppressed errors, rerun with: -s
+==25297== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

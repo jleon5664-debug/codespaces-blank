@@ -1,0 +1,12 @@
+--- WILL'S PC STATUS ---
+Storage Box Queue (0): EMPTY
+Active Roster (0): EMPTY
+------------------------
+[EVENT] Withdrew 0 monster(s) from Will's PC to Active Roster.
+[EVENT] Deposited to Will's PC: Eevee (Normal, Lv: 20, HP: 55)
+[EVENT] Withdrew 1 monster(s) from Will's PC to Active Roster.
+--- WILL'S PC STATUS ---
+Storage Box Queue (0): EMPTY
+Active Roster (1): Eevee [Lv: 20]
+------------------------
+[EVENT] Logged off Will's PC.

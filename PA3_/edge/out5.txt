@@ -1,0 +1,15 @@
+[EVENT] Deposited to Will's PC: Bulbasaur (Grass, Lv: 15, HP: 45)
+[EVENT] Deposited to Will's PC: Squirtle (Water, Lv: 14, HP: 44)
+[EVENT] Deposited to Will's PC: Charmander (Fire, Lv: 16, HP: 39)
+[EVENT] Withdrew 1 monster(s) from Will's PC to Active Roster.
+[EVENT] Returned Bulbasaur from Active Roster back to Will's PC.
+--- WILL'S PC STATUS ---
+Storage Box Queue (3): Squirtle [Lv: 14] -> Charmander [Lv: 16] -> Bulbasaur [Lv: 15]
+Active Roster (0): EMPTY
+------------------------
+[EVENT] Withdrew 2 monster(s) from Will's PC to Active Roster.
+--- WILL'S PC STATUS ---
+Storage Box Queue (1): Bulbasaur [Lv: 15]
+Active Roster (2): Charmander [Lv: 16] -> Squirtle [Lv: 14]
+------------------------
+[EVENT] Logged off Will's PC.

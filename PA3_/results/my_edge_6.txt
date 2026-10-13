@@ -1,0 +1,8 @@
+--- WILL'S PC STATUS ---
+Storage Box Queue (0): EMPTY
+Active Roster (0): EMPTY
+------------------------
+[EVENT] Released 0 fainted monster(s) with HP below 50.
+[ERROR] Missingno is not in the Active Roster.
+[EVENT] Withdrew 0 monster(s) from Will's PC to Active Roster.
+[EVENT] Logged off Will's PC.

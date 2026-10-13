@@ -1,0 +1,22 @@
+[EVENT] Deposited to Will's PC: Flame (Fire, Lv: 100, HP: 0)
+[EVENT] Deposited to Will's PC: Spark (Electric, Lv: 50, HP: 0)
+[EVENT] Deposited to Will's PC: Spark (Electric, Lv: 50, HP: 10)
+[EVENT] Deposited to Will's PC: Wave (Water, Lv: 50, HP: 10)
+[EVENT] Deposited to Will's PC: Leaf (Grass, Lv: 10, HP: 0)
+[EVENT] Deposited to Will's PC: Shadow (Ghost, Lv: 10, HP: 0)
+[EVENT] Withdrew 6 monster(s) from Will's PC to Active Roster.
+--- WILL'S PC STATUS ---
+Storage Box Queue (0): EMPTY
+Active Roster (6): Flame [Lv: 100] -> Spark [Lv: 50] -> Wave [Lv: 50] -> Spark [Lv: 50] -> Leaf [Lv: 10] -> Shadow [Lv: 10]
+------------------------
+[EVENT] Returned Spark from Active Roster back to Will's PC.
+--- WILL'S PC STATUS ---
+Storage Box Queue (1): Spark [Lv: 50]
+Active Roster (5): Flame [Lv: 100] -> Wave [Lv: 50] -> Spark [Lv: 50] -> Leaf [Lv: 10] -> Shadow [Lv: 10]
+------------------------
+[EVENT] Released 4 fainted monster(s) with HP below 1.
+--- WILL'S PC STATUS ---
+Storage Box Queue (1): Spark [Lv: 50]
+Active Roster (1): Wave [Lv: 50]
+------------------------
+[EVENT] Logged off Will's PC.

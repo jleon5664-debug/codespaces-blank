@@ -1,0 +1,13 @@
+[EVENT] Deposited to Will's PC: Pidgey (Normal, Lv: 10, HP: 30)
+[EVENT] Deposited to Will's PC: Pidgey (Normal, Lv: 25, HP: 40)
+[EVENT] Deposited to Will's PC: Rattata (Normal, Lv: 5, HP: 20)
+[EVENT] Withdrew 2 monster(s) from Will's PC to Active Roster.
+[ERROR] Rattata is not in the Active Roster.
+[ERROR] Mewtwo is not in the Active Roster.
+[ERROR] pidgey is not in the Active Roster.
+[EVENT] Returned Pidgey from Active Roster back to Will's PC.
+--- WILL'S PC STATUS ---
+Storage Box Queue (2): Rattata [Lv: 5] -> Pidgey [Lv: 25]
+Active Roster (1): Pidgey [Lv: 10]
+------------------------
+[EVENT] Logged off Will's PC.

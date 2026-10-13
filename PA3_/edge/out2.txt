@@ -1,0 +1,10 @@
+[EVENT] Deposited to Will's PC: Golem (Rock, Lv: 62, HP: 60)
+[EVENT] Deposited to Will's PC: Gengar (Ghost, Lv: 62, HP: 80)
+[EVENT] Deposited to Will's PC: Haunter (Ghost, Lv: 62, HP: 80)
+[EVENT] Deposited to Will's PC: Onix (Rock, Lv: 62, HP: 95)
+[EVENT] Withdrew 4 monster(s) from Will's PC to Active Roster.
+--- WILL'S PC STATUS ---
+Storage Box Queue (0): EMPTY
+Active Roster (4): Onix [Lv: 62] -> Gengar [Lv: 62] -> Haunter [Lv: 62] -> Golem [Lv: 62]
+------------------------
+[EVENT] Logged off Will's PC.
