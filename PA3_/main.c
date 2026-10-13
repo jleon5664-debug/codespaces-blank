@@ -184,6 +184,7 @@ void releaseWillsPC(WillsPC* pc) {
  
 // prints one chain front-to-back, both queue & roster
 static void printChain(const Node* head) {
+    const Node* cur;
     if (head == NULL) {
         printf("EMPTY\n");
         return;
@@ -198,6 +199,7 @@ static void printChain(const Node* head) {
  
 // count roster length by walking it
 static int countChain(const Node* head) {
+    const Node* cur;
     int count = 0;
     for (const Node* cur = head; cur != NULL; cur = cur->next) count++;
     return count;
