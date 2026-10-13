@@ -189,7 +189,7 @@ static void printChain(const Node* head) {
         printf("EMPTY\n");
         return;
     }
-    for (const Node* cur = head; cur != NULL; cur = cur->next) {
+    for (cur = head; cur != NULL; cur = cur->next) {
         // -> goes between items only, skipped after the last node
         printf("%s [Lv: %d]%s", cur->monster->name, cur->monster->level,
                cur->next ? " -> " : "");
@@ -201,7 +201,7 @@ static void printChain(const Node* head) {
 static int countChain(const Node* head) {
     const Node* cur;
     int count = 0;
-    for (const Node* cur = head; cur != NULL; cur = cur->next) count++;
+    for (cur = head; cur != NULL; cur = cur->next) count++;
     return count;
 }
  
