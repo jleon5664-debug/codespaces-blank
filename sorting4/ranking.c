@@ -34,13 +34,16 @@ int partition(Monster **list, int low, int high, int key);
  // Returns 0 if identical 
 
 int compareTo(Monster *m1, Monster *m2, int key) {
+    // Larger score ranks earlier
     if (m1->scores[key] > m2->scores[key]) {
-        return -1; // Larger score ranks earlier
+        return -1; 
     }
+    // Smaller score ranks later
     if (m1->scores[key] < m2->scores[key]) {
-        return 1;  // Smaller score ranks later
+        return 1;  
     }
-    return strcmp(m1->name, m2->name); // Alphabetical tie-breaker (ascending)
+    // Alphabetical tie-breaker, ascending by first letter
+    return strcmp(m1->name, m2->name);
 }
 
 
