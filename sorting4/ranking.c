@@ -7,6 +7,7 @@ This program is written by: Jeronimo Leon */
 #include <string.h>
 #include <time.h>
 
+// Required constraints
 #define MAXSIZE 30
 #define NUMSCORES 4
 #define POWER 0
@@ -34,17 +35,12 @@ void swap(Monster **list, int a, int b);
 int partition(Monster **list, int low, int high, int key);
 
 
- // Single Source of Truth for Monster Ordering
- // Returns < 0 if m1 comes before m2 larger score in 'key', or alphabetical tie-break
- // Returns > 0 if m2 comes before m1
- // Returns 0 if identical 
- 
 int compareTo(Monster *m1, Monster *m2, int key) {
-    // Larger score ranks earlier
+    // Larger score ranks earlier, return negative
     if (m1->scores[key] > m2->scores[key]) {
         return -1; 
     }
-    // Smaller score ranks later
+    // Smaller score ranks later, positive
     if (m1->scores[key] < m2->scores[key]) {
         return 1;  
     }
@@ -52,44 +48,46 @@ int compareTo(Monster *m1, Monster *m2, int key) {
     return strcmp(m1->name, m2->name);
 }
  
- 
- //Sorts slice list[low..high] inclusive in-place using Insertion Sort.
- //Strictly bounded by j >= low so recursive calls never bleed into adjacent slices.
- 
+ // Recursive sort slice
 void insertionSort(Monster **list, int low, int high, int key) {
+    // i is first unsorted index
     for (int i = low + 1; i <= high; i++) {
+        // 
         Monster *current = list[i];
         int j = i - 1;
+        // Runs condition while current ranks before list
+        // Use j >= low to establish slice boundary
         while (j >= low && compareTo(current, list[j], key) < 0) {
+            // Shift pointer right, copy bytes
             list[j + 1] = list[j];
             j--;
         }
+        // Drop current into hole
         list[j + 1] = current;
     }
 }
  
- 
- //Combines two adjacent sorted slices list[low..mid] and list[mid+1..high]
- //into a single sorted slice list[low..high] using a dynamically allocated pointer buffer.
- 
 void merge(Monster **list, int low, int mid, int high, int key) {
+    // Element count
     int size = high - low + 1;
-    // local pointer 
-    // alocate Monster size 
+    // Local array pointer 
+    // Alocate Monster size 
     Monster **temp = (Monster **)malloc(size * sizeof(Monster *));
-    // ensure allocation
+    // Ensure allocation
     if (temp == NULL) {
         exit(EXIT_FAILURE);
     }
- 
+     
     int leftIndex = low;
     int rightIndex = mid + 1;
     int tempIndex = 0;
  
+    // Run until one of the halves is depleted
     while (leftIndex <= mid && rightIndex <= high) {
         if (compareTo(list[leftIndex], list[rightIndex], key) <= 0) {
             temp[tempIndex++] = list[leftIndex++];
         } else {
+            // Rank right index first
             temp[tempIndex++] = list[rightIndex++];
         }
     }
@@ -111,61 +109,50 @@ void merge(Monster **list, int low, int mid, int high, int key) {
  
 // Recursive Hybrid Merge Sort on list[low..high] 
 void mergeSortRec(Monster **list, int low, int high, int key) {
+    // Slice size
     int size = high - low + 1;
-    // base case
+    // Base case
     if (size <= BASECASESIZE) {
         insertionSort(list, low, high, key);
         return;
     }
- 
-    int mid = low + (high - low) / 2;   // same midpoint form as the lecture's MergeSort
+    
+    // Last index of left half
+    int mid = low + (high - low) / 2;
+    // Sort left half
     mergeSortRec(list, low, mid, key);
+    // Sorts right half
     mergeSortRec(list, mid + 1, high, key);
+    // Combines
     merge(list, low, mid, high, key);
 }
  
- //Wrapper for Merge Sort over list[0..n-1].
- 
 void mergeSort(Monster **list, int n, int key) {
     if (n <= 0) return;
+    // Convert the count to bounds
     mergeSortRec(list, 0, n - 1, key);
 }
  
  
-/*
- * swap
- * Exchanges the two pointers stored at list[a] and list[b].
- * The Monster structs themselves never move.
- */
+
 void swap(Monster **list, int a, int b) {
     Monster *hold = list[a];
     list[a] = list[b];
     list[b] = hold;
 }
  
-/*
- * partition  (two-counter in-place scheme from lecture)
- * Precondition:  low <= high.
- * Postcondition: the pivot sits at the returned index pivotFinal;
- *                every element in list[low..pivotFinal-1] comes before it,
- *                every element in list[pivotFinal+1..high] comes after it.
- *
- * Steps:
- *   1. pick a random index in [low, high] and swap that monster into list[low]
- *   2. left counter starts just after the pivot, right counter starts at high
- *   3. move left forward while its element comes before (or equals) the pivot
- *      move right backward while its element comes after the pivot
- *      if the counters have not crossed, both stopped on a misplaced element: swap them
- *   4. when the counters cross, right rests on the last element that comes
- *      before the pivot: swap the pivot into that slot and return it
- */
+
 int partition(Monster **list, int low, int high, int key) {
     int pivotIndex = low + rand() % (high - low + 1);
-    swap(list, low, pivotIndex);          // park the pivot at list[low]
-    int pivotPos = low;                   // where the pivot is parked
+    // park the pivot at list[low]
+    swap(list, low, pivotIndex);
+    // where the pivot is parked
+    int pivotPos = low;    
  
-    int left = low + 1;                   // scans forward
-    int right = high;                     // scans backward
+    // scans forward
+    int left = low + 1; 
+    // scans backward
+    int right = high; 
  
     while (left <= right) {
         // advance left past elements that belong on the left (come before or equal pivot)
@@ -271,13 +258,15 @@ int main(void) {
         printf("%d. %-15s %d\n", i + 1, speedList[i]->name, speedList[i]->scores[SPEED]);
     }
  
-    // Freeing Phase 
-    // Single-pass deallocation through overallList to prevent double-free
+    // Free individually to prevent double-free
     for (int i = 0; i < N; i++) {
+        // free name before struct
         free(overallList[i]->name);
         free(overallList[i]);
     }
+    // Free any dangling pointers
     free(overallList);
+    // Then array block
     free(speedList);
  
     return 0;
