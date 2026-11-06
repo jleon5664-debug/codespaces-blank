@@ -1,0 +1,13 @@
+Overall Expedition Ranking
+1. Alpha           300
+2. Bravo           300
+3. Delta           300
+4. Echo            300
+5. Zeta            300
+
+Speed Challenge Ranking
+1. Alpha           100
+2. Bravo           100
+3. Delta           100
+4. Echo            100
+5. Zeta            100

@@ -1,0 +1,6 @@
+5
+Zeta Fire 100 100 100
+Alpha Water 100 100 100
+Echo Grass 100 100 100
+Bravo Electric 100 100 100
+Delta Ghost 100 100 100

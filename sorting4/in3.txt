@@ -1,0 +1,11 @@
+10
+Monster000000 Fire 0 500 0
+Monster000001 Water 73 500 41
+Monster000002 Grass 146 500 82
+Monster000003 Electric 219 500 123
+Monster000004 Ghost 292 500 164
+Monster000005 Normal 365 500 205
+Monster000006 Fire 438 500 246
+Monster000007 Water 511 500 287
+Monster000008 Grass 584 500 328
+Monster000009 Electric 657 500 369
